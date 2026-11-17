@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard &mdash; Hesa Adda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+    .stat-card {
+      background-color: var(--white);
+      border: 2px solid var(--black);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: 4px 4px 0 var(--black);
+      transition: transform 150ms ease;
+    }
+    .stat-card:hover {
+      transform: translate(-2px, -2px);
+    }
+    .stat-card-title {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      font-family: var(--font-body);
+    }
+    .stat-card-value {
+      font-family: var(--font-display);
+      font-size: 2.75rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    /* Simple CSS Div Bar Chart */
+    .chart-container {
+      border: 2px solid var(--black);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      background-color: var(--white);
+      margin-bottom: var(--space-4);
+      box-shadow: 4px 4px 0 var(--black);
+    }
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      height: 180px;
+      gap: 20px;
+      padding-top: 20px;
+      border-bottom: 2px solid var(--black);
+    }
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+    }
+    .bar-val {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .bar-rect {
+      width: 100%;
+      max-width: 54px;
+      border-top-left-radius: var(--radius-sm);
+      border-top-right-radius: var(--radius-sm);
+      border: 2px solid var(--black);
+      border-bottom: none;
+    }
+    .bar-rect-black { background-color: var(--black); }
+    .bar-rect-yellow { background-color: var(--yellow); }
+    .bar-label {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      margin-top: 8px;
+      text-align: center;
+      font-family: var(--font-body);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Role Bar -->
+  <div id="role-bar-container"></div>
+
+  <div class="admin-layout">
+    <!-- Desktop-first Black Sidebar (260px wide) -->
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-header">
+        <h2>HESA <span style="color: var(--yellow);">Admin</span></h2>
+        <div style="font-size: 0.8125rem; color: #AAA; margin-top: 4px;">48-Hour Operations Desk</div>
+      </div>
+
+      <nav class="admin-nav">
+        <a href="dashboard.html" class="active">
+          <span>Dashboard</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="applications.html">
+          <span>Applications</span>
+          <span id="nav-badge-apps" style="font-size: 0.75rem; background: var(--yellow); color: var(--black); padding: 1px 6px; border-radius: var(--radius-pill); font-weight: 800;">12</span>
+        </a>
+        <a href="map.html">
+          <span>Highway Map View</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="addas.html">
+          <span>Approved Addas</span>
+          <span id="nav-badge-addas" style="font-size: 0.75rem; background: var(--white); color: var(--black); padding: 1px 6px; border-radius: var(--radius-pill); font-weight: 800;">3</span>
+        </a>
+        <div style="margin-top: auto; padding: 24px; border-top: 1px solid #333;">
+          <a href="../manager/visits.html" style="padding: 0; color: var(--yellow); font-size: 0.875rem;">Switch to Manager View &rarr;</a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Admin Content Area -->
+    <main class="admin-content">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: var(--space-4); border-bottom: 2px solid var(--black); padding-bottom: var(--space-3);">
+        <div>
+          <span class="section-pill">Command Center</span>
+          <h1 style="font-size: clamp(2rem, 4vw, 2.75rem);">Verification Operations<span class="deg-sym">&deg;</span></h1>
+          <p style="margin-top: 4px; font-size: 1rem;">Real-time monitoring of the Hesaathi 48-hour onboarding verification pipeline.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <a href="applications.html" class="btn btn-primary btn-sm">Review Applications &rarr;</a>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="handleResetDemo()">Reset Data</button>
+        </div>
+      </div>
+
+      <!-- 5 Metric Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-title">New Submitted</div>
+          <div class="stat-card-value" id="stat-submitted">3</div>
+          <span class="badge badge-submitted">Pending triage</span>
+        </div>
+
+        <div class="stat-card" style="border-top: 6px solid var(--yellow);">
+          <div class="stat-card-title">Under Review</div>
+          <div class="stat-card-value" id="stat-review">5</div>
+          <span class="badge badge-under-review">Field visit active</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-title">Due Soon (&lt;12h)</div>
+          <div class="stat-card-value" id="stat-warning">2</div>
+          <span class="badge badge-under-review">48h SLA Priority</span>
+        </div>
+
+        <div class="stat-card" style="background-color: var(--black); color: var(--white); border-color: var(--black);">
+          <div class="stat-card-title" style="color: #AAA;">Overdue (&gt;48h)</div>
+          <div class="stat-card-value" id="stat-overdue" style="color: var(--white);">1</div>
+          <span class="badge" style="background-color: var(--white); color: var(--black);">Escalated</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-title">Approved (Month)</div>
+          <div class="stat-card-value" id="stat-approved">3</div>
+          <span class="badge badge-approved">Ready for setup</span>
+        </div>
+      </div>
+
+      <!-- Div Bar Chart -->
+      <div class="chart-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
+          <h3 style="font-size: 1.25rem;">Applications Pipeline by Status<span class="deg-sym">&deg;</span></h3>
+          <span class="small-label">DIV BAR CHART &bull; YELLOW = ACTIVE PIPELINE</span>
+        </div>
+
+        <div class="bar-chart" id="bar-chart-container">
+          <div class="bar-col">
+            <span class="bar-val" id="chart-val-submitted">3</span>
+            <div class="bar-rect bar-rect-yellow" id="chart-bar-submitted" style="height: 60px;"></div>
+            <span class="bar-label">Submitted</span>
+          </div>
+
+          <div class="bar-col">
+            <span class="bar-val" id="chart-val-review">5</span>
+            <div class="bar-rect bar-rect-yellow" id="chart-bar-review" style="height: 100px;"></div>
+            <span class="bar-label">Under Review</span>
+          </div>
+
+          <div class="bar-col">
+            <span class="bar-val" id="chart-val-changes">1</span>
+            <div class="bar-rect bar-rect-black" id="chart-bar-changes" style="height: 20px;"></div>
+            <span class="bar-label">Changes Req.</span>
+          </div>
+
+          <div class="bar-col">
+            <span class="bar-val" id="chart-val-approved">2</span>
+            <div class="bar-rect bar-rect-black" id="chart-bar-approved" style="height: 40px;"></div>
+            <span class="bar-label">Approved</span>
+          </div>
+
+          <div class="bar-col">
+            <span class="bar-val" id="chart-val-rejected">1</span>
+            <div class="bar-rect bar-rect-black" id="chart-bar-rejected" style="height: 20px;"></div>
+            <span class="bar-label">Rejected</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Priority Action Queue Table -->
+      <div class="card" style="box-shadow: 4px 4px 0 var(--black); padding: 0; overflow: hidden;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 2px solid var(--black);">
+          <h3 style="font-size: 1.25rem;">Priority Verification Queue (SLA Critical)<span class="deg-sym">&deg;</span></h3>
+          <a href="applications.html" style="font-weight: 700; font-size: 0.9rem;">View All Applications &rarr;</a>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table" style="margin-bottom: 0;">
+            <thead>
+              <tr>
+                <th>App ID</th>
+                <th>Applicant</th>
+                <th>Highway Junction</th>
+                <th>Site Score</th>
+                <th>Status</th>
+                <th>48-Hour Timer</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="priority-tbody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    renderRoleBar('admin', '../');
+
+    function refreshDashboard() {
+      const apps = HesaStorage.getApplications();
+      const addas = HesaStorage.getAddas();
+
+      document.getElementById('nav-badge-apps').textContent = apps.length;
+      document.getElementById('nav-badge-addas').textContent = addas.length;
+
+      let countSubmitted = 0;
+      let countReview = 0;
+      let countChanges = 0;
+      let countApproved = 0;
+      let countRejected = 0;
+      let countWarning = 0;
+      let countOverdue = 0;
+
+      apps.forEach(app => {
+        if (app.status === 'Submitted') countSubmitted++;
+        else if (app.status === 'Under review') countReview++;
+        else if (app.status === 'Changes requested') countChanges++;
+        else if (app.status === 'Approved') countApproved++;
+        else if (app.status === 'Rejected') countRejected++;
+
+        if (app.status !== 'Approved' && app.status !== 'Rejected') {
+          const t = calculateTimer(app.submittedAt, app.status);
+          if (t.isOverdue) countOverdue++;
+          else if (t.isWarning) countWarning++;
+        }
+      });
+
+      document.getElementById('stat-submitted').textContent = countSubmitted;
+      document.getElementById('stat-review').textContent = countReview;
+      document.getElementById('stat-warning').textContent = countWarning;
+      document.getElementById('stat-overdue').textContent = countOverdue;
+      document.getElementById('stat-approved').textContent = countApproved;
+
+      // Update Chart
+      const maxCount = Math.max(countSubmitted, countReview, countChanges, countApproved, countRejected, 1);
+      const maxHeightPx = 140;
+
+      const setBar = (valId, barId, count) => {
+        document.getElementById(valId).textContent = count;
+        const h = Math.max(12, Math.round((count / maxCount) * maxHeightPx));
+        document.getElementById(barId).style.height = `${h}px`;
+      };
+
+      setBar('chart-val-submitted', 'chart-bar-submitted', countSubmitted);
+      setBar('chart-val-review', 'chart-bar-review', countReview);
+      setBar('chart-val-changes', 'chart-bar-changes', countChanges);
+      setBar('chart-val-approved', 'chart-bar-approved', countApproved);
+      setBar('chart-val-rejected', 'chart-bar-rejected', countRejected);
+
+      // Populate priority queue
+      const sorted = [...apps].sort((a, b) => {
+        const tA = calculateTimer(a.submittedAt, a.status);
+        const tB = calculateTimer(b.submittedAt, b.status);
+        return tA.rawMs - tB.rawMs;
+      }).slice(0, 5);
+
+      const tbody = document.getElementById('priority-tbody');
+      tbody.innerHTML = sorted.map(app => `
+        <tr>
+          <td><strong>${app.id}</strong></td>
+          <td>
+            <strong>${app.applicantName}</strong>
+            <div style="font-size: 0.8125rem;">${app.phone}</div>
+          </td>
+          <td>
+            ${app.highway || 'Highway'}
+            <div style="font-size: 0.8125rem;">${app.village}, ${app.state}</div>
+          </td>
+          <td><strong>${app.siteScore || 75}</strong> / 100</td>
+          <td>${renderStatusBadge(app.status)}</td>
+          <td>${renderTimerBadge(app.submittedAt, app.status)}</td>
+          <td>
+            <a href="application.html?id=${app.id}" class="btn btn-primary btn-sm">Review &rarr;</a>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      refreshDashboard();
+    });
+  </script>
+</body>
+</html>

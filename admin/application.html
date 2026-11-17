@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application Review &mdash; Hesa Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <!-- Leaflet CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+    @media (min-width: 992px) {
+      .detail-grid {
+        grid-template-columns: 1.5fr 1fr;
+      }
+    }
+    .check-list-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    @media (min-width: 600px) {
+      .check-list-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .check-box-item {
+      border: 2px solid var(--black);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      background-color: var(--white);
+    }
+    .score-breakdown-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 0.875rem;
+    }
+    .score-name {
+      width: 170px;
+      font-weight: 700;
+    }
+    .score-bar-bg {
+      flex: 1;
+      height: 14px;
+      background-color: var(--white);
+      border: 2px solid var(--black);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+    }
+    .score-bar-val-black {
+      background-color: var(--black);
+      height: 100%;
+    }
+    .score-bar-val-yellow {
+      background-color: var(--yellow);
+      height: 100%;
+    }
+    .score-num {
+      width: 44px;
+      text-align: right;
+      font-weight: 800;
+      font-family: var(--font-display);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Role Bar -->
+  <div id="role-bar-container"></div>
+
+  <div class="admin-layout">
+    <!-- Desktop Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-header">
+        <h2>HESA <span style="color: var(--yellow);">Admin</span></h2>
+        <div style="font-size: 0.8125rem; color: #AAA; margin-top: 4px;">48-Hour Operations Desk</div>
+      </div>
+
+      <nav class="admin-nav">
+        <a href="dashboard.html">
+          <span>Dashboard</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="applications.html" class="active">
+          <span>Applications</span>
+          <span style="font-size: 0.75rem; background: var(--yellow); color: var(--black); padding: 1px 6px; border-radius: var(--radius-pill); font-weight: 800;">12</span>
+        </a>
+        <a href="map.html">
+          <span>Highway Map View</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="addas.html">
+          <span>Approved Addas</span>
+          <span>&rarr;</span>
+        </a>
+        <div style="margin-top: auto; padding: 24px; border-top: 1px solid #333;">
+          <a href="../manager/visits.html" style="padding: 0; color: var(--yellow); font-size: 0.875rem;">Switch to Manager View &rarr;</a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-content">
+
+      <!-- Success Banner for Approved Adda -->
+      <div id="approved-alert-banner" style="background-color: var(--black); color: var(--white); border: 2px solid var(--yellow); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 24px; display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+          <div>
+            <span class="badge" style="background-color: var(--yellow); color: var(--black); margin-bottom: 4px;">LIVE FRANCHISE ISSUED</span>
+            <h3 style="color: var(--white); font-size: 1.4rem;">Adda ID created and login sent<span class="deg-sym">&deg;</span></h3>
+            <p style="color: #DDD; font-size: 0.95rem; margin-bottom: 0;">
+              Allocated Adda ID: <strong id="alert-adda-id" style="color: var(--yellow); font-size: 1.1rem;">ADDA-TS-001</strong> &bull; Hesaathi notified via WhatsApp/SMS.
+            </p>
+          </div>
+          <a href="addas.html" class="btn btn-primary btn-sm">View in Addas List &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Header Row -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: var(--space-4); border-bottom: 2px solid var(--black); padding-bottom: var(--space-3);">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+            <a href="applications.html" style="font-weight: 700; font-size: 0.875rem;">&larr; Back to Directory</a>
+            <span>|</span>
+            <span id="app-id-title" style="font-weight: 800; font-family: var(--font-display);">HA-2026-001</span>
+            <span id="app-status-badge"></span>
+          </div>
+          <h1 id="app-applicant-name" style="font-size: clamp(1.85rem, 3.5vw, 2.5rem);">Ramesh Reddy &mdash; Highway Verification<span class="deg-sym">&deg;</span></h1>
+        </div>
+
+        <div style="text-align: right;">
+          <div class="small-label" style="margin-bottom: 4px;">48-Hour SLA Timer:</div>
+          <div id="app-timer-badge"></div>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+
+        <!-- LEFT COLUMN: Map, Auto Checks, Manager Visit -->
+        <div>
+
+          <!-- Map with Street/Satellite Toggle -->
+          <div class="card" style="margin-bottom: var(--space-4); box-shadow: 4px 4px 0 var(--black);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h3 style="font-size: 1.25rem;">Geospatial Highway Review<span class="deg-sym">&deg;</span></h3>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" id="btn-layer-street" class="btn btn-black btn-sm" onclick="setMapLayer('street')">Street View</button>
+                <button type="button" id="btn-layer-sat" class="btn btn-secondary btn-sm" onclick="setMapLayer('sat')">Satellite</button>
+              </div>
+            </div>
+
+            <div id="admin-map" style="height: 340px; border: 2px solid var(--black); border-radius: var(--radius-md);"></div>
+            <div style="margin-top: 12px; font-size: 0.875rem; display: flex; justify-content: space-between; flex-wrap: wrap;">
+              <span><strong>Coordinates:</strong> <span id="map-coords">18.3218, 78.3375</span></span>
+              <span><strong>Junction:</strong> <span id="map-highway">NH 44 Cross</span></span>
+            </div>
+          </div>
+
+          <!-- Automated Geospatial Intelligence -->
+          <div class="card" style="margin-bottom: var(--space-4); box-shadow: 4px 4px 0 var(--black);">
+            <span class="section-pill" style="margin-bottom: 6px;">Algorithm Checks</span>
+            <h3 style="font-size: 1.25rem; margin-bottom: 4px;">Automated Geospatial Intelligence<span class="deg-sym">&deg;</span></h3>
+            <p style="font-size: 0.9rem; margin-bottom: 14px;">Highway setback, nearest toll volumes, and SAAMAAN micro-warehouse feeder proximity.</p>
+
+            <div class="check-list-grid">
+              <div class="check-box-item">
+                <div class="small-label" style="color: #555; margin-bottom: 2px;">Distance to NH Carriageway</div>
+                <div style="font-weight: 800; font-size: 1rem;" id="check-dist-nh">80 meters</div>
+              </div>
+              <div class="check-box-item">
+                <div class="small-label" style="color: #555; margin-bottom: 2px;">Nearest Toll Plaza</div>
+                <div style="font-weight: 800; font-size: 1rem;" id="check-toll">Indalwai Toll Plaza (12 km)</div>
+              </div>
+              <div class="check-box-item">
+                <div class="small-label" style="color: #555; margin-bottom: 2px;">Nearby Competitors</div>
+                <div style="font-weight: 800; font-size: 1rem;" id="check-comp">1 local dhaba (800m), no modern retail</div>
+              </div>
+              <div class="check-box-item">
+                <div class="small-label" style="color: #555; margin-bottom: 2px;">Villages Within 20 KM</div>
+                <div style="font-weight: 800; font-size: 1rem;" id="check-villages">18 villages (pop ~48,000)</div>
+              </div>
+              <div class="check-box-item" style="grid-column: 1 / -1;">
+                <div class="small-label" style="color: #555; margin-bottom: 2px;">Distance to SAAMAAN Warehouse</div>
+                <div style="font-weight: 800; font-size: 1rem;" id="check-warehouse">14 km (Nizamabad Central Hub)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Manager Ground Visit Report Summary -->
+          <div class="card" style="box-shadow: 4px 4px 0 var(--black);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h3 style="font-size: 1.25rem;">Manager Ground Visit Report<span class="deg-sym">&deg;</span></h3>
+              <span id="visit-status-tag" class="badge badge-under-review">Scheduled</span>
+            </div>
+
+            <div id="visit-report-content">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Site Score, Land Specs, Decision Actions -->
+        <div>
+
+          <!-- Site Score (0-100) -->
+          <div class="card" style="margin-bottom: var(--space-4); box-shadow: 4px 4px 0 var(--black);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; border-bottom: 2px solid var(--black); padding-bottom: 10px;">
+              <div>
+                <span class="section-pill" style="margin-bottom: 4px;">Site Score</span>
+                <h3 style="font-size: 1.25rem;">Weighted Algorithm Score<span class="deg-sym">&deg;</span></h3>
+              </div>
+              <div style="text-align: right;">
+                <span id="score-total-val" style="font-size: 2.5rem; font-weight: 800; line-height: 1; font-family: var(--font-display);">88</span>
+                <span style="font-size: 1rem; font-weight: 800;"> / 100</span>
+              </div>
+            </div>
+
+            <!-- Score breakdown bars -->
+            <div id="score-breakdown-list">
+              <div class="score-breakdown-row">
+                <div class="score-name">Highway Traffic (30)</div>
+                <div class="score-bar-bg">
+                  <div class="score-bar-val-black" id="bar-traffic" style="width: 86%;"></div>
+                </div>
+                <div class="score-num" id="val-traffic">26</div>
+              </div>
+
+              <div class="score-breakdown-row">
+                <div class="score-name">Village Catchment (25)</div>
+                <div class="score-bar-bg">
+                  <div class="score-bar-val-yellow" id="bar-villages" style="width: 88%;"></div>
+                </div>
+                <div class="score-num" id="val-villages">22</div>
+              </div>
+
+              <div class="score-breakdown-row">
+                <div class="score-name">Competition Index (15)</div>
+                <div class="score-bar-bg">
+                  <div class="score-bar-val-black" id="bar-competition" style="width: 86%;"></div>
+                </div>
+                <div class="score-num" id="val-competition">13</div>
+              </div>
+
+              <div class="score-breakdown-row">
+                <div class="score-name">Land Road Access (15)</div>
+                <div class="score-bar-bg">
+                  <div class="score-bar-val-yellow" id="bar-landAccess" style="width: 93%;"></div>
+                </div>
+                <div class="score-num" id="val-landAccess">14</div>
+              </div>
+
+              <div class="score-breakdown-row">
+                <div class="score-name">Warehouse Distance (10)</div>
+                <div class="score-bar-bg">
+                  <div class="score-bar-val-black" id="bar-warehouse" style="width: 80%;"></div>
+                </div>
+                <div class="score-num" id="val-warehouse">8</div>
+              </div>
+
+              <div class="score-breakdown-row">
+                <div class="score-name">Hesaathi Profile (5)</div>
+                <div class="score-bar-bg">
+                  <div class="score-bar-val-yellow" id="bar-hesaathi" style="width: 100%;"></div>
+                </div>
+                <div class="score-num" id="val-hesaathi">5</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Land Specs -->
+          <div class="card" style="margin-bottom: var(--space-4); box-shadow: 4px 4px 0 var(--black);">
+            <h3 style="font-size: 1.25rem; margin-bottom: 12px; border-bottom: 2px solid var(--black); padding-bottom: 6px;">Applicant &amp; Land Specs<span class="deg-sym">&deg;</span></h3>
+            <p style="font-size: 0.95rem;"><strong>Phone:</strong> <span id="app-phone">9848012345</span></p>
+            <p style="font-size: 0.95rem;"><strong>Alt Phone:</strong> <span id="app-alt-phone">&mdash;</span></p>
+            <p style="font-size: 0.95rem;"><strong>Village / Mandal:</strong> <span id="app-location">Kamareddy, Bhiknoor</span></p>
+            <p style="font-size: 0.95rem;"><strong>District &amp; State:</strong> <span id="app-state-dist">Kamareddy, Telangana (503101)</span></p>
+            <p style="font-size: 0.95rem;"><strong>Land Area:</strong> <span id="app-land-size">4,800 sq ft</span></p>
+            <p style="font-size: 0.95rem;"><strong>Title Type:</strong> <span id="app-ownership">Self Owned</span></p>
+            <p style="font-size: 0.95rem;"><strong>ID Document:</strong> <span id="app-id-doc">Aadhaar (XXXX-XXXX-4589)</span></p>
+          </div>
+
+          <!-- Documents List -->
+          <div class="card" style="margin-bottom: var(--space-4); box-shadow: 4px 4px 0 var(--black);">
+            <h3 style="font-size: 1.25rem; margin-bottom: 12px; border-bottom: 2px solid var(--black); padding-bottom: 6px;">Submitted Documents &amp; Photos<span class="deg-sym">&deg;</span></h3>
+            <div id="docs-list" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+
+          <!-- DECISION ACTIONS PANEL -->
+          <div class="card" style="border: 2px solid var(--black); box-shadow: 6px 6px 0 var(--black);">
+            <span class="section-pill">Action Panel</span>
+            <h3 style="font-size: 1.35rem; margin-bottom: 6px;">Verification Decision<span class="deg-sym">&deg;</span></h3>
+            <p style="font-size: 0.9rem; margin-bottom: 16px;">
+              Submitting a decision completes the 48-hour SLA cycle and updates the applicant's status tracker.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- 1. Approve (Yellow) -->
+              <button type="button" class="btn btn-primary" onclick="handleDecision('Approved')">
+                &#x2713; Approve Application
+              </button>
+
+              <!-- 2. Approve with conditions (White with black border) -->
+              <button type="button" class="btn btn-secondary" onclick="handleDecision('ApprovedWithConditions')">
+                Approve with Conditions
+              </button>
+
+              <!-- 3. Request Changes (White with black border) -->
+              <button type="button" class="btn btn-secondary" onclick="promptRequestChanges()">
+                Request Changes / Clarifications
+              </button>
+
+              <!-- 4. Reject (White with black border, reason required) -->
+              <button type="button" class="btn btn-secondary" onclick="promptReject()">
+                &#x2715; Reject (Reason Required)
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal for Reject Reason -->
+  <div id="modal-reject" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Reject Application Reason<span class="deg-sym">&deg;</span></h3>
+        <button class="modal-close" onclick="closeModal('modal-reject')">&times;</button>
+      </div>
+      <p style="font-size: 0.95rem; margin-bottom: 14px;">
+        State the transparent reason for rejecting this site (setback violation, poor highway visibility, flood risk):
+      </p>
+      <div class="form-group">
+        <textarea id="reject-reason-text" class="form-control" rows="4" placeholder="Enter transparent rejection reason..."></textarea>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-reject')">Cancel</button>
+        <button type="button" class="btn btn-black" onclick="confirmReject()">Confirm Rejection</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Request Changes -->
+  <div id="modal-changes" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Request Changes from Applicant<span class="deg-sym">&deg;</span></h3>
+        <button class="modal-close" onclick="closeModal('modal-changes')">&times;</button>
+      </div>
+      <p style="font-size: 0.95rem; margin-bottom: 14px;">
+        Specify what documents or photos need re-submission:
+      </p>
+      <div class="form-group">
+        <textarea id="changes-reason-text" class="form-control" rows="4" placeholder="e.g. Please provide a clearer road view photo showing NH boundary pillar..."></textarea>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-changes')">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="confirmChanges()">Send Change Request</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    renderRoleBar('admin', '../');
+
+    let currentApp = null;
+    let leafMap = null;
+    let leafMarker = null;
+    let streetLayer = null;
+    let satLayer = null;
+
+    function getAppIdFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('id') || HesaStorage.getActiveApplicationId();
+    }
+
+    function loadApplicationDetail() {
+      const appId = getAppIdFromUrl();
+      currentApp = HesaStorage.getApplicationById(appId);
+
+      if (!currentApp) {
+        alert("Application not found.");
+        window.location.href = 'applications.html';
+        return;
+      }
+
+      document.getElementById('app-id-title').textContent = currentApp.id;
+      document.getElementById('app-applicant-name').innerHTML = `${currentApp.applicantName} &mdash; Highway Verification<span class="deg-sym">&deg;</span>`;
+      document.getElementById('app-status-badge').innerHTML = renderStatusBadge(currentApp.status);
+      document.getElementById('app-timer-badge').innerHTML = renderTimerBadge(currentApp.submittedAt, currentApp.status);
+
+      if (currentApp.status === 'Approved') {
+        document.getElementById('approved-alert-banner').style.display = 'block';
+        document.getElementById('alert-adda-id').textContent = currentApp.addaId || 'ADDA-TS-001';
+      }
+
+      document.getElementById('app-phone').textContent = currentApp.phone;
+      document.getElementById('app-alt-phone').textContent = currentApp.altPhone || 'None';
+      document.getElementById('app-location').textContent = `${currentApp.village}, ${currentApp.mandal || ''}`;
+      document.getElementById('app-state-dist').textContent = `${currentApp.district || ''}, ${currentApp.state} (${currentApp.pincode || ''})`;
+      document.getElementById('app-land-size').textContent = `${(currentApp.landSizeSqFt || 4000).toLocaleString()} sq ft`;
+      document.getElementById('app-ownership').textContent = currentApp.ownershipType === 'own' ? 'Self Owned' : currentApp.ownershipType === 'lease' ? 'Leased' : 'Gram Panchayat Allotment';
+      document.getElementById('app-id-doc').textContent = `${currentApp.idType || 'Aadhaar'} (${currentApp.idNumber || 'Verified'})`;
+
+      const checks = currentApp.autoChecks || {};
+      document.getElementById('check-dist-nh').textContent = checks.distanceToNH || '80 meters';
+      document.getElementById('check-toll').textContent = checks.nearestTollPlaza || 'Local Toll (~15 km)';
+      document.getElementById('check-comp').textContent = checks.nearbyCompetitors || 'No direct competitors';
+      document.getElementById('check-villages').textContent = checks.villagesWithin20km || '18 villages';
+      document.getElementById('check-warehouse').textContent = checks.distanceToSaamaanWarehouse || '16 km';
+
+      const scoreData = calculateSiteScore(currentApp.factors);
+      document.getElementById('score-total-val').textContent = scoreData.total;
+      const b = scoreData.breakdown;
+
+      const setScoreRow = (key, val, max) => {
+        const valEl = document.getElementById(`val-${key}`);
+        const barEl = document.getElementById(`bar-${key}`);
+        if (valEl && barEl) {
+          valEl.textContent = val;
+          const pct = Math.round((val / max) * 100);
+          barEl.style.width = `${pct}%`;
+        }
+      };
+
+      setScoreRow('traffic', b.traffic, 30);
+      setScoreRow('villages', b.villages, 25);
+      setScoreRow('competition', b.competition, 15);
+      setScoreRow('landAccess', b.landAccess, 15);
+      setScoreRow('warehouse', b.warehouse, 10);
+      setScoreRow('hesaathi', b.hesaathi, 5);
+
+      renderManagerVisitReport();
+      renderDocumentsList();
+      initDetailMap();
+    }
+
+    function renderManagerVisitReport() {
+      const v = currentApp.managerVisit || {};
+      const container = document.getElementById('visit-report-content');
+      const tag = document.getElementById('visit-status-tag');
+
+      if (!v.visited) {
+        tag.className = 'badge badge-under-review';
+        tag.textContent = v.scheduled ? 'Visit Scheduled' : 'Visit Pending';
+        container.innerHTML = `
+          <p style="font-size: 0.95rem; margin-bottom: 8px;">
+            <strong>Assigned Officer:</strong> ${v.managerName || 'Vikram Patil'} &bull; Scheduled for ${v.visitDate || 'Tomorrow'}
+          </p>
+          <div style="background-color: var(--white); border: 2px solid var(--black); border-radius: var(--radius-md); padding: 14px; font-size: 0.9rem; font-weight: 600;">
+            Physical ground visit has not yet been submitted. Manager verification checklist is active in the Manager Portal.
+          </div>
+          <div style="margin-top: 14px;">
+            <a href="../manager/visits.html" class="btn btn-secondary btn-sm">Open Manager Checklist &rarr;</a>
+          </div>
+        `;
+      } else {
+        tag.className = 'badge badge-approved';
+        tag.textContent = 'Visited & Verified';
+        const cl = v.checklist || {};
+        container.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span><strong>Verified by:</strong> ${v.managerName || 'Vikram Patil'}</span>
+            <span style="font-size: 0.85rem; font-weight: 700;">Visit Date: ${v.visitDate || '2026-11-17'}</span>
+          </div>
+
+          <div class="check-list-grid" style="margin-bottom: 14px;">
+            <div style="font-size: 0.9rem;">${cl.setbackOk ? '&#x2713; NH Setback Compliant' : '&#x2715; Setback Non-compliant'}</div>
+            <div style="font-size: 0.9rem;">${cl.roadAccess ? '&#x2713; Paved Approach Road' : '&#x2715; Road Inadequate'}</div>
+            <div style="font-size: 0.9rem;">${cl.electricity ? '&#x2713; 3-Phase Power Pole Near' : '&#x2715; No Electricity Near'}</div>
+            <div style="font-size: 0.9rem;">${cl.water ? '&#x2713; Water Supply Available' : '&#x2715; Water Supply Deficient'}</div>
+            <div style="font-size: 0.9rem;">${cl.truckParking ? '&#x2713; Truck Parking Feasible' : '&#x2715; No Parking Margin'}</div>
+            <div style="font-size: 0.9rem;">${cl.papersMatch ? '&#x2713; Documents Match Ground' : '&#x2715; Boundary Mismatch'}</div>
+          </div>
+
+          <div style="background-color: var(--white); border: 2px solid var(--black); border-radius: var(--radius-md); padding: 12px; font-size: 0.9rem;">
+            <strong>Manager Observations:</strong> ${v.notes || 'Site is suitable for prefab installation.'}
+          </div>
+        `;
+      }
+    }
+
+    function renderDocumentsList() {
+      const docs = currentApp.documents || [
+        { name: "Aadhaar Card", status: "Verified" },
+        { name: "Land Title / Passbook", status: "Verified" },
+        { name: "Front Highway View", status: "Uploaded" },
+        { name: "Road View Photo", status: "Uploaded" },
+        { name: "Surroundings View", status: "Uploaded" }
+      ];
+
+      const container = document.getElementById('docs-list');
+      container.innerHTML = docs.map(doc => `
+        <div style="display: flex; justify-content: space-between; align-items: center; border: 2px solid var(--black); border-radius: var(--radius-md); padding: 10px 14px; font-size: 0.875rem;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-weight: 800;">&#128196;</span>
+            <span style="font-weight: 700;">${doc.name}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="badge ${doc.status === 'Verified' ? 'badge-approved' : 'badge-under-review'}" style="font-size: 0.75rem; padding: 2px 8px;">${doc.status || 'Uploaded'}</span>
+            <button type="button" class="btn btn-secondary btn-sm" style="min-height: 32px; padding: 2px 8px; font-size: 0.75rem;" onclick="viewDocMock('${doc.name}')">Preview</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function viewDocMock(docName) {
+      alert(`[Document Preview]\nName: ${docName}\nStatus: Verified on file\nApplicant: ${currentApp.applicantName}\nHighway Site: ${currentApp.highway}`);
+    }
+
+    function initDetailMap() {
+      const lat = currentApp.lat || 18.3218;
+      const lng = currentApp.lng || 78.3375;
+
+      document.getElementById('map-coords').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      document.getElementById('map-highway').textContent = currentApp.highway || 'National Highway';
+
+      if (!leafMap) {
+        leafMap = L.map('admin-map').setView([lat, lng], 14);
+
+        streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap'
+        }).addTo(leafMap);
+
+        satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          attribution: 'Esri World Imagery'
+        });
+
+        const pinIcon = createCustomPin(currentApp.status);
+        leafMarker = L.marker([lat, lng], { icon: pinIcon }).addTo(leafMap);
+        leafMarker.bindPopup(`<b>${currentApp.applicantName}</b><br>${currentApp.highway}<br>Score: ${currentApp.siteScore}/100`).openPopup();
+      } else {
+        leafMap.setView([lat, lng], 14);
+        leafMarker.setLatLng([lat, lng]);
+      }
+    }
+
+    function setMapLayer(type) {
+      if (type === 'sat') {
+        leafMap.removeLayer(streetLayer);
+        leafMap.addLayer(satLayer);
+        document.getElementById('btn-layer-sat').className = 'btn btn-black btn-sm';
+        document.getElementById('btn-layer-street').className = 'btn btn-secondary btn-sm';
+      } else {
+        leafMap.removeLayer(satLayer);
+        leafMap.addLayer(streetLayer);
+        document.getElementById('btn-layer-street').className = 'btn btn-black btn-sm';
+        document.getElementById('btn-layer-sat').className = 'btn btn-secondary btn-sm';
+      }
+    }
+
+    function handleDecision(type) {
+      if (!currentApp) return;
+
+      if (type === 'Approved' || type === 'ApprovedWithConditions') {
+        currentApp.status = 'Approved';
+        if (!currentApp.addaId) {
+          const stateCode = currentApp.state === 'Karnataka' ? 'KA' : currentApp.state === 'Maharashtra' ? 'MH' : 'TS';
+          currentApp.addaId = `ADDA-${stateCode}-00${Math.floor(Math.random() * 80 + 10)}`;
+        }
+        currentApp.loginSent = true;
+
+        const addas = HesaStorage.getAddas();
+        if (!addas.some(a => a.applicationId === currentApp.id)) {
+          HesaStorage.saveAdda({
+            addaId: currentApp.addaId,
+            applicationId: currentApp.id,
+            name: `${currentApp.village} Gateway Adda`,
+            hesaathiName: currentApp.applicantName,
+            phone: currentApp.phone,
+            highway: currentApp.highway || 'National Highway',
+            village: currentApp.village,
+            state: currentApp.state,
+            status: 'Setup',
+            assignedManager: currentApp.managerVisit?.managerName || 'Vikram Patil',
+            setupProgress: type === 'ApprovedWithConditions' ? 25 : 40,
+            commissionDate: 'Pending completion',
+            dailyFootfall: 0,
+            monthlyRevenue: 'Pending setup',
+            lat: currentApp.lat,
+            lng: currentApp.lng
+          });
+        }
+
+        HesaStorage.saveApplication(currentApp);
+        document.getElementById('approved-alert-banner').style.display = 'block';
+        document.getElementById('alert-adda-id').textContent = currentApp.addaId;
+        document.getElementById('app-status-badge').innerHTML = renderStatusBadge('Approved');
+        document.getElementById('app-timer-badge').innerHTML = renderTimerBadge(currentApp.submittedAt, 'Approved');
+        alert(`Application Approved!\n\nAdda ID ${currentApp.addaId} created.\nWelcome SMS & WhatsApp dispatch triggered.`);
+      }
+    }
+
+    function promptReject() {
+      document.getElementById('modal-reject').classList.add('open');
+    }
+
+    function confirmReject() {
+      const reason = document.getElementById('reject-reason-text').value.trim();
+      if (!reason) {
+        alert("A rejection reason is mandatory.");
+        return;
+      }
+      currentApp.status = 'Rejected';
+      currentApp.rejectionReason = reason;
+      HesaStorage.saveApplication(currentApp);
+      closeModal('modal-reject');
+      loadApplicationDetail();
+      alert("Application marked Rejected. Hesaathi notified with transparent reason.");
+    }
+
+    function promptRequestChanges() {
+      document.getElementById('modal-changes').classList.add('open');
+    }
+
+    function confirmChanges() {
+      const note = document.getElementById('changes-reason-text').value.trim();
+      if (!note) {
+        alert("Please describe the requested changes.");
+        return;
+      }
+      currentApp.status = 'Changes requested';
+      currentApp.changesReason = note;
+      HesaStorage.saveApplication(currentApp);
+      closeModal('modal-changes');
+      loadApplicationDetail();
+      alert("Changes requested from applicant. Tracker updated.");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadApplicationDetail();
+    });
+  </script>
+</body>
+</html>

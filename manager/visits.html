@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manager Ground Visits &mdash; Hesa Adda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .manager-wrapper {
+      padding: var(--space-6) var(--space-3) var(--space-10);
+      flex: 1;
+    }
+    .manager-container {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+    .visit-card-row {
+      border: 2px solid var(--black);
+      border-radius: var(--radius-lg);
+      padding: var(--space-3);
+      background-color: var(--white);
+      margin-bottom: var(--space-3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 var(--black);
+      transition: transform 150ms ease;
+    }
+    .visit-card-row:hover {
+      transform: translate(-2px, -2px);
+    }
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    @media (min-width: 600px) {
+      .checklist-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .checklist-item {
+      border: 2px solid var(--black);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      background-color: var(--white);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Role Bar -->
+  <div id="role-bar-container"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="../index.html" class="logo-area">
+        <span class="brand-wordmark">HESA</span>
+        <span class="brand-badge" style="background-color: var(--black); color: var(--white);">Manager</span>
+      </a>
+
+      <div class="header-actions">
+        <span style="font-size: 0.875rem; font-weight: 700;">Officer: Vikram Patil (Zone 4)</span>
+        <a href="../admin/dashboard.html" class="btn btn-secondary btn-sm">Admin View &rarr;</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="manager-wrapper">
+    <div class="manager-container">
+
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: var(--space-4); border-bottom: 2px solid var(--black); padding-bottom: var(--space-3);">
+        <div>
+          <span class="section-pill">Field Operations</span>
+          <h1 style="font-size: clamp(2rem, 4vw, 2.75rem);">Ground Verification Desk<span class="deg-sym">&deg;</span></h1>
+          <p style="margin-top: 4px; font-size: 1rem;">
+            48-Hour SLA Physical Verification Protocol. Visit highway plots, verify NHAI setback clearance, and submit reports.
+          </p>
+        </div>
+        <div>
+          <span class="badge badge-under-review" style="font-size: 0.875rem; padding: 6px 14px;" id="pending-visit-badge">
+            4 Pending Visits
+          </span>
+        </div>
+      </div>
+
+      <!-- Visits Tab Header -->
+      <div style="display: flex; gap: 10px; margin-bottom: var(--space-4);">
+        <button type="button" id="tab-pending" class="btn btn-black btn-sm" onclick="filterVisits('pending')">Pending Visits</button>
+        <button type="button" id="tab-completed" class="btn btn-secondary btn-sm" onclick="filterVisits('completed')">Completed Reports</button>
+      </div>
+
+      <!-- Visits List -->
+      <div id="visits-list">
+        <!-- Populated via JS -->
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal for Ground Visit Checklist Form -->
+  <div id="modal-visit" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header">
+        <div>
+          <h3 id="modal-app-title">Site Verification Checklist<span class="deg-sym">&deg;</span></h3>
+          <div id="modal-app-sub" style="font-size: 0.875rem; font-weight: 700;">HA-2026-001 &bull; Kamareddy</div>
+        </div>
+        <button class="modal-close" onclick="closeVisitModal()">&times;</button>
+      </div>
+
+      <form id="visit-checklist-form" onsubmit="submitVisitReport(event)">
+        <p style="font-size: 0.95rem; margin-bottom: 14px;">
+          Inspect the parcel against NHAI road frontage regulations and operational standards:
+        </p>
+
+        <!-- 6 Mandatory Checkpoints -->
+        <div class="checklist-grid">
+          <div class="checklist-item">
+            <label class="form-check" style="margin-bottom: 0;">
+              <input type="checkbox" id="chk-setback" required>
+              <span><strong>1. NH Setback Compliant</strong><br><small>Meets mandatory highway boundary clearance</small></span>
+            </label>
+          </div>
+
+          <div class="checklist-item">
+            <label class="form-check" style="margin-bottom: 0;">
+              <input type="checkbox" id="chk-road" required>
+              <span><strong>2. All-Weather Road Access</strong><br><small>Wide, paved approach for vehicles</small></span>
+            </label>
+          </div>
+
+          <div class="checklist-item">
+            <label class="form-check" style="margin-bottom: 0;">
+              <input type="checkbox" id="chk-elec" required>
+              <span><strong>3. Electricity Proximity</strong><br><small>Commercial/3-phase power line &lt;100m</small></span>
+            </label>
+          </div>
+
+          <div class="checklist-item">
+            <label class="form-check" style="margin-bottom: 0;">
+              <input type="checkbox" id="chk-water" required>
+              <span><strong>4. Water Supply Feasible</strong><br><small>Borewell or municipal tap feasibility</small></span>
+            </label>
+          </div>
+
+          <div class="checklist-item">
+            <label class="form-check" style="margin-bottom: 0;">
+              <input type="checkbox" id="chk-parking" required>
+              <span><strong>5. Truck Parking Feasible</strong><br><small>Adequate turning radius for heavy trucks</small></span>
+            </label>
+          </div>
+
+          <div class="checklist-item">
+            <label class="form-check" style="margin-bottom: 0;">
+              <input type="checkbox" id="chk-papers" required>
+              <span><strong>6. Papers Match Land</strong><br><small>Ground boundaries match survey title deed</small></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Geo-tagged Photo Upload -->
+        <div class="form-group" style="margin-top: 16px;">
+          <label class="form-label">Upload On-Site Geotagged Photo <span class="req">*</span></label>
+          <div class="upload-dropzone" onclick="document.getElementById('manager-photo').click()">
+            <p style="font-weight: 700;">Take or Upload Inspection Photo</p>
+            <span style="font-size: 0.8125rem;">Captures site orientation &amp; road frontage</span>
+            <input type="file" id="manager-photo" accept="image/*" style="display: none;" onchange="handleManagerPhoto(this)">
+          </div>
+          <div id="manager-photo-preview" class="upload-preview" style="display: none; margin-top: 8px;">
+            <span id="manager-photo-name" style="font-weight: 700;">inspection_site_pic.jpg</span>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="form-group">
+          <label class="form-label" for="visit-notes">Manager Field Observations &amp; Notes <span class="req">*</span></label>
+          <textarea id="visit-notes" class="form-control" rows="3" placeholder="Describe intersection visibility, truck turning space, and your final recommendation..." required></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; border-top: 2px solid var(--black); padding-top: 16px;">
+          <button type="button" class="btn btn-secondary" onclick="closeVisitModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            Submit Visit Report &check;
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>HESA &mdash; Rooted in Growth<span class="deg-sym">&deg;</span></div>
+        <div>
+          <button type="button" class="footer-reset-btn" onclick="handleResetDemo()">Reset demo data</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    renderRoleBar('manager', '../');
+
+    let activeFilter = 'pending';
+    let selectedAppId = null;
+
+    function renderVisits() {
+      const apps = HesaStorage.getApplications();
+      const listContainer = document.getElementById('visits-list');
+
+      let pendingCount = 0;
+      apps.forEach(a => {
+        if (!a.managerVisit || !a.managerVisit.visited) pendingCount++;
+      });
+      document.getElementById('pending-visit-badge').textContent = `${pendingCount} Pending Visits`;
+
+      const filtered = apps.filter(a => {
+        const isVisited = a.managerVisit && a.managerVisit.visited;
+        return activeFilter === 'pending' ? !isVisited : isVisited;
+      });
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = `
+          <div class="card" style="text-align: center; padding: 48px;">
+            <h3>No ${activeFilter === 'pending' ? 'pending' : 'completed'} visits found.</h3>
+          </div>
+        `;
+        return;
+      }
+
+      listContainer.innerHTML = filtered.map(app => {
+        const v = app.managerVisit || {};
+        const isVisited = v.visited;
+
+        return `
+          <div class="visit-card-row" onclick="openVisitModal('${app.id}')">
+            <div>
+              <div style="font-size: 0.8125rem; font-weight: 700; text-transform: uppercase;">${app.id} &bull; ${app.highway || 'Highway'}</div>
+              <h3 style="margin: 4px 0; font-size: 1.35rem;">${app.applicantName} &mdash; ${app.village}, ${app.state}</h3>
+              <p style="font-size: 0.9rem; margin-bottom: 0;">
+                Phone: <strong>${app.phone}</strong> &bull; Land Size: <strong>${(app.landSizeSqFt || 4000).toLocaleString()} sq ft</strong> &bull; Score: <strong>${app.siteScore || 75}/100</strong>
+              </p>
+            </div>
+
+            <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+              <div>
+                ${isVisited ? '<span class="badge badge-approved">&#x2713; VISITED</span>' : renderTimerBadge(app.submittedAt, app.status)}
+              </div>
+              <button type="button" class="btn btn-secondary btn-sm" style="font-weight: 700;">
+                ${isVisited ? 'View Report' : 'Complete Visit Checklist &rarr;'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterVisits(type) {
+      activeFilter = type;
+      if (type === 'pending') {
+        document.getElementById('tab-pending').className = 'btn btn-black btn-sm';
+        document.getElementById('tab-completed').className = 'btn btn-secondary btn-sm';
+      } else {
+        document.getElementById('tab-completed').className = 'btn btn-black btn-sm';
+        document.getElementById('tab-pending').className = 'btn btn-secondary btn-sm';
+      }
+      renderVisits();
+    }
+
+    function openVisitModal(appId) {
+      selectedAppId = appId;
+      const app = HesaStorage.getApplicationById(appId);
+      if (!app) return;
+
+      document.getElementById('modal-app-title').innerHTML = `${app.applicantName} &mdash; Ground Visit Checklist<span class="deg-sym">&deg;</span>`;
+      document.getElementById('modal-app-sub').textContent = `${app.id} \u2022 ${app.village}, ${app.state} (${app.highway})`;
+
+      const v = app.managerVisit || {};
+      const cl = v.checklist || {};
+
+      document.getElementById('chk-setback').checked = cl.setbackOk || false;
+      document.getElementById('chk-road').checked = cl.roadAccess || false;
+      document.getElementById('chk-elec').checked = cl.electricity || false;
+      document.getElementById('chk-water').checked = cl.water || false;
+      document.getElementById('chk-parking').checked = cl.truckParking || false;
+      document.getElementById('chk-papers').checked = cl.papersMatch || false;
+      document.getElementById('visit-notes').value = v.notes || '';
+
+      document.getElementById('modal-visit').classList.add('open');
+    }
+
+    function closeVisitModal() {
+      document.getElementById('modal-visit').classList.remove('open');
+      selectedAppId = null;
+    }
+
+    function handleManagerPhoto(input) {
+      if (input.files && input.files[0]) {
+        document.getElementById('manager-photo-preview').style.display = 'flex';
+        document.getElementById('manager-photo-name').textContent = input.files[0].name;
+      }
+    }
+
+    function submitVisitReport(e) {
+      e.preventDefault();
+      if (!selectedAppId) return;
+
+      const app = HesaStorage.getApplicationById(selectedAppId);
+      if (!app) return;
+
+      const checklist = {
+        setbackOk: document.getElementById('chk-setback').checked,
+        roadAccess: document.getElementById('chk-road').checked,
+        electricity: document.getElementById('chk-elec').checked,
+        water: document.getElementById('chk-water').checked,
+        truckParking: document.getElementById('chk-parking').checked,
+        papersMatch: document.getElementById('chk-papers').checked
+      };
+
+      const notes = document.getElementById('visit-notes').value.trim();
+
+      app.managerVisit = {
+        scheduled: true,
+        managerName: "Vikram Patil",
+        visitDate: new Date().toISOString().split('T')[0],
+        visited: true,
+        checklist: checklist,
+        notes: notes,
+        photo: "geotagged_inspection.jpg"
+      };
+
+      if (app.status === 'Submitted') {
+        app.status = 'Under review';
+      }
+
+      HesaStorage.saveApplication(app);
+      closeVisitModal();
+      renderVisits();
+      alert("Ground verification report submitted successfully! Application marked 'Visited'.");
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderVisits();
+    });
+  </script>
+</body>
+</html>

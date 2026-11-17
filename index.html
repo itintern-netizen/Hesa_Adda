@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hesa Adda &mdash; Highway Commerce Hubs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Hero layout */
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+      align-items: center;
+    }
+    @media (min-width: 960px) {
+      .hero-grid {
+        grid-template-columns: 1.15fr 0.85fr;
+      }
+    }
+    .hero-facts-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: var(--space-5);
+      padding-top: var(--space-3);
+      border-top: 1px solid var(--black);
+      font-size: 0.9375rem;
+      font-weight: 600;
+    }
+    .hero-fact-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hero-fact-divider {
+      color: var(--black);
+      display: none;
+    }
+    @media (min-width: 640px) {
+      .hero-fact-divider { display: inline; }
+    }
+    .hero-svg-frame {
+      width: 100%;
+      border: 2px solid var(--black);
+      border-radius: var(--radius-lg);
+      background-color: var(--white);
+      box-shadow: 6px 6px 0 var(--black);
+      overflow: hidden;
+    }
+
+    /* Key Numbers Yellow Band */
+    .num-band-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+      text-align: left;
+    }
+    @media (min-width: 600px) {
+      .num-band-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (min-width: 992px) {
+      .num-band-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    .num-big-val {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin-bottom: var(--space-1);
+      color: var(--black);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Role Bar -->
+  <div id="role-bar-container"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo-area">
+        <span class="brand-wordmark">HESA</span>
+        <span class="brand-badge">ADDA</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#about">About</a>
+        <a href="#problems">The Problem</a>
+        <a href="#revenue">Revenue</a>
+        <a href="#model">Franchise</a>
+        <a href="#process">Process</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="#" class="header-status-link" onclick="routeCheckStatus(event)">Check status</a>
+        <a href="#" class="btn btn-primary btn-sm" onclick="routeApplyNow(event)">Apply now</a>
+        <button class="hamburger-btn" type="button" aria-label="Toggle navigation" onclick="toggleMobileNav()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Nav Drawer -->
+  <div id="mobile-drawer" class="mobile-nav-drawer">
+    <a href="#about" onclick="toggleMobileNav()">About</a>
+    <a href="#problems" onclick="toggleMobileNav()">The Problem</a>
+    <a href="#revenue" onclick="toggleMobileNav()">Revenue</a>
+    <a href="#model" onclick="toggleMobileNav()">Franchise</a>
+    <a href="#process" onclick="toggleMobileNav()">Process</a>
+    <a href="#faq" onclick="toggleMobileNav()">FAQ</a>
+    <a href="#" onclick="toggleMobileNav(); routeCheckStatus(event);">Check status</a>
+    <a href="#" class="btn btn-primary" onclick="toggleMobileNav(); routeApplyNow(event);">Apply now &rarr;</a>
+  </div>
+
+  <main>
+
+    <!-- ====================================================================
+         HERO SECTION (Two columns: Pitch on Left, Flat SVG on Right)
+         ==================================================================== -->
+    <section class="section-wrap" style="padding-top: 64px; padding-bottom: 72px;">
+      <div class="container">
+        <div class="hero-grid">
+
+          <!-- Left Column -->
+          <div class="fade-up">
+            <span class="section-pill">Franchise opportunity</span>
+            <h1>Run your own Adda<span class="deg-sym">&deg;</span></h1>
+            <p style="font-size: 1.25rem; line-height: 1.5; margin: var(--space-3) 0 var(--space-4);">
+              Highway commerce hubs that connect national highways to the villages around them.
+            </p>
+
+            <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+              <a href="#" class="btn btn-primary" onclick="routeApplyNow(event)">Apply now &rarr;</a>
+              <a href="#about" class="btn btn-secondary">See how it works</a>
+            </div>
+
+            <!-- 3 Trust Facts -->
+            <div class="hero-facts-row">
+              <div class="hero-fact-item">
+                <span style="color: var(--yellow); font-size: 1.2rem;">&#9632;</span>
+                <span>300-500 sq ft modular unit</span>
+              </div>
+              <span class="hero-fact-divider">&bull;</span>
+              <div class="hero-fact-item">
+                <span style="color: var(--yellow); font-size: 1.2rem;">&#9632;</span>
+                <span>Run by a local Hesaathi</span>
+              </div>
+              <span class="hero-fact-divider">&bull;</span>
+              <div class="hero-fact-item">
+                <span style="color: var(--yellow); font-size: 1.2rem;">&#9632;</span>
+                <span>Built at highway intersections</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Bold Flat SVG Illustration (Black, Yellow, White Only) -->
+          <div class="fade-up">
+            <div class="hero-svg-frame">
+              <svg viewBox="0 0 500 380" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+                <!-- Background Sky -->
+                <rect width="500" height="380" fill="#FFFFFF"/>
+
+                <!-- Distant Village Roofs Outline (Black 2px) -->
+                <path d="M40 210 L60 190 L80 210 L110 185 L140 210 L160 195 L180 210 L210 180 L240 210" fill="none" stroke="#111111" stroke-width="2"/>
+                <rect x="50" y="210" width="22" height="18" fill="#FFFFFF" stroke="#111111" stroke-width="2"/>
+                <rect x="115" y="210" width="20" height="18" fill="#FFFFFF" stroke="#111111" stroke-width="2"/>
+                <rect x="195" y="210" width="30" height="18" fill="#FFFFFF" stroke="#111111" stroke-width="2"/>
+
+                <!-- Highway Strip -->
+                <rect x="0" y="250" width="500" height="130" fill="#111111"/>
+                <!-- Dashed White Highway Lane Line -->
+                <line x1="0" y1="315" x2="500" y2="315" stroke="#FFFFFF" stroke-width="4" stroke-dasharray="24 16"/>
+
+                <!-- Truck on Highway -->
+                <g transform="translate(40, 275)">
+                  <!-- Truck Body -->
+                  <rect x="0" y="0" width="70" height="32" fill="#FFFFFF" stroke="#111111" stroke-width="2" rx="2"/>
+                  <!-- Truck Cab -->
+                  <path d="M70 10 L88 10 L94 20 L94 32 L70 32 Z" fill="#F2B705" stroke="#111111" stroke-width="2"/>
+                  <!-- Cab Window -->
+                  <path d="M74 13 L85 13 L89 20 L74 20 Z" fill="#FFFFFF" stroke="#111111" stroke-width="1.5"/>
+                  <!-- Wheels -->
+                  <circle cx="16" cy="34" r="7" fill="#111111" stroke="#FFFFFF" stroke-width="2"/>
+                  <circle cx="56" cy="34" r="7" fill="#111111" stroke="#FFFFFF" stroke-width="2"/>
+                  <circle cx="82" cy="34" r="7" fill="#111111" stroke="#FFFFFF" stroke-width="2"/>
+                </g>
+
+                <!-- Hesa Adda Modular Prefab Building (Main Focal) -->
+                <g transform="translate(260, 140)">
+                  <!-- Foundation Platform -->
+                  <rect x="-10" y="105" width="210" height="8" fill="#111111"/>
+                  <!-- Main Prefab Container -->
+                  <rect x="0" y="20" width="190" height="85" fill="#FFFFFF" stroke="#111111" stroke-width="3" rx="4"/>
+                  <!-- Yellow Strip Awning with Scallop -->
+                  <rect x="-8" y="20" width="206" height="18" fill="#F2B705" stroke="#111111" stroke-width="2" rx="2"/>
+                  <!-- Awning diagonal accents -->
+                  <line x1="30" y1="20" x2="20" y2="38" stroke="#111111" stroke-width="2"/>
+                  <line x1="70" y1="20" x2="60" y2="38" stroke="#111111" stroke-width="2"/>
+                  <line x1="110" y1="20" x2="100" y2="38" stroke="#111111" stroke-width="2"/>
+                  <line x1="150" y1="20" x2="140" y2="38" stroke="#111111" stroke-width="2"/>
+                  <!-- Bold HESA ADDA Signage Board -->
+                  <rect x="25" y="-6" width="140" height="22" fill="#111111" rx="3"/>
+                  <text x="95" y="10" font-family="'Bricolage Grotesque', sans-serif" font-size="12" font-weight="800" fill="#F2B705" text-anchor="middle" letter-spacing="1.5">HESA ADDA&deg;</text>
+                  <!-- Retail Counter Window -->
+                  <rect x="15" y="48" width="65" height="45" fill="#FFFFFF" stroke="#111111" stroke-width="2"/>
+                  <line x1="15" y1="70" x2="80" y2="70" stroke="#111111" stroke-width="1.5"/>
+                  <rect x="25" y="73" width="18" height="15" fill="#F2B705" stroke="#111111" stroke-width="1"/>
+                  <rect x="50" y="73" width="18" height="15" fill="#111111"/>
+                  <!-- Banking / Services Door -->
+                  <rect x="95" y="48" width="35" height="57" fill="#FFFFFF" stroke="#111111" stroke-width="2"/>
+                  <circle cx="122" cy="78" r="2.5" fill="#111111"/>
+                  <!-- SAAMAAN Micro Warehouse Shutter Section -->
+                  <rect x="142" y="48" width="36" height="57" fill="#FFFFFF" stroke="#111111" stroke-width="2"/>
+                  <line x1="142" y1="56" x2="178" y2="56" stroke="#111111" stroke-width="1"/>
+                  <line x1="142" y1="64" x2="178" y2="64" stroke="#111111" stroke-width="1"/>
+                  <line x1="142" y1="72" x2="178" y2="72" stroke="#111111" stroke-width="1"/>
+                  <line x1="142" y1="80" x2="178" y2="80" stroke="#111111" stroke-width="1"/>
+                  <line x1="142" y1="88" x2="178" y2="88" stroke="#111111" stroke-width="1"/>
+                </g>
+
+                <!-- Highway Solar Street Light -->
+                <path d="M240 250 L240 100 L255 90" fill="none" stroke="#111111" stroke-width="3"/>
+                <polygon points="250,86 265,82 268,92 253,96" fill="#F2B705" stroke="#111111" stroke-width="1.5"/>
+              </svg>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         FULL-WIDTH BLACK MARQUEE STRIP (CSS Infinite Scroll)
+         ==================================================================== -->
+    <div class="marquee-strip">
+      <div class="marquee-content">
+        Rooted in Growth<span class="deg-sym">&deg;</span> &nbsp;&bull;&nbsp; Highway Commerce Hubs<span class="deg-sym">&deg;</span> &nbsp;&bull;&nbsp; Run by Hesaathis<span class="deg-sym">&deg;</span> &nbsp;&bull;&nbsp; 48-hour verification<span class="deg-sym">&deg;</span> &nbsp;&bull;&nbsp; Rooted in Growth<span class="deg-sym">&deg;</span> &nbsp;&bull;&nbsp; Highway Commerce Hubs<span class="deg-sym">&deg;</span> &nbsp;&bull;&nbsp; Run by Hesaathis<span class="deg-sym">&deg;</span> &nbsp;&bull;&nbsp; 48-hour verification<span class="deg-sym">&deg;</span> &nbsp;&bull;&nbsp;
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         A2. WHAT IS HESA ADDA? (White background)
+         ==================================================================== -->
+    <section id="about" class="section-wrap">
+      <div class="container fade-up">
+        <span class="section-pill">About the Model</span>
+        <h2>What is Hesa Adda?<span class="deg-sym">&deg;</span></h2>
+        <p style="font-size: 1.25rem; line-height: 1.7; margin-top: var(--space-2);">
+          A chain of modular prefab hubs at national highway intersections, serving truckers, travellers and nearby villages. Each Adda also works as a micro-warehouse for SAAMAAN's local inventory, bringing wholesale supply and essential commerce directly to rural highway corridors.
+        </p>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         A3. THE PROBLEM WE SOLVE (Black Section with 2px Yellow border cards)
+         ==================================================================== -->
+    <section id="problems" class="section-wrap section-black">
+      <div class="container fade-up">
+        <span class="section-pill">01 / The Problem</span>
+        <h2 style="color: var(--white); margin-bottom: var(--space-4);">The problem we solve<span class="deg-sym">&deg;</span></h2>
+
+        <div class="grid-4">
+          <!-- Card 1 -->
+          <div class="card">
+            <div style="margin-bottom: var(--space-2);">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+              </svg>
+            </div>
+            <h4 style="margin-bottom: 8px;">Highway Dead Zones</h4>
+            <p style="font-size: 0.95rem;">Highway junctions are dead zones with no organised retail or hygienic facilities.</p>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="card">
+            <div style="margin-bottom: var(--space-2);">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </div>
+            <h4 style="margin-bottom: 8px;">Isolated Villages</h4>
+            <p style="font-size: 0.95rem;">Villages within 20 km lack modern commerce access and quick supply availability.</p>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="card">
+            <div style="margin-bottom: var(--space-2);">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="3" width="15" height="13"></rect>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+              </svg>
+            </div>
+            <h4 style="margin-bottom: 8px;">Neglected Truckers</h4>
+            <p style="font-size: 0.95rem;">Truckers have no reliable, clean service points, tyre maintenance, or rest zones.</p>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="card">
+            <div style="margin-bottom: var(--space-2);">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                <line x1="7" y1="8" x2="17" y2="8"></line>
+                <line x1="7" y1="12" x2="17" y2="12"></line>
+                <line x1="7" y1="16" x2="11" y2="16"></line>
+              </svg>
+            </div>
+            <h4 style="margin-bottom: 8px;">No Rural Service Face</h4>
+            <p style="font-size: 0.95rem;">Government services (Aadhaar, ration, insurance) have no rural face on highways.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         A4. REVENUE STREAMS (Bento Grid: One Large Black Card + 4 White Cards)
+         ==================================================================== -->
+    <section id="revenue" class="section-wrap">
+      <div class="container fade-up">
+        <span class="section-pill">02 / Revenue Model</span>
+        <h2>What an Adda offers: the 5 revenue streams<span class="deg-sym">&deg;</span></h2>
+        <p style="margin-bottom: var(--space-4);">Five diversified income streams operating simultaneously under one roof.</p>
+
+        <div class="bento-grid">
+          <!-- Bento Large 1 (Black Hero Card) -->
+          <div class="bento-card bento-card-black bento-large">
+            <div>
+              <div class="bento-header">
+                <span class="badge" style="background-color: var(--yellow); color: var(--black);">Flagship Stream</span>
+                <span class="bento-num">01</span>
+              </div>
+              <h3 style="font-size: 1.75rem; margin-bottom: 8px;">Retail &amp; Highway Mart</h3>
+              <p style="font-size: 1.05rem;">
+                FMCG products, cold beverages, packaged snacks, and locally sourced fresh farm produce tailored for high-volume passing highway traffic, bus commuters, and local motorists.
+              </p>
+            </div>
+            <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #333; font-size: 0.85rem; color: #AAA;">
+              &bull; High inventory turns &bull; Immediate daily cashflow
+            </div>
+          </div>
+
+          <!-- Bento 2 -->
+          <div class="bento-card">
+            <div class="bento-header">
+              <span class="small-label">Financial Access</span>
+              <span class="bento-num">02</span>
+            </div>
+            <h3>Hesa Services</h3>
+            <p>Banking agent cash withdrawal, Aadhaar payout, micro-insurance, and government utility counters.</p>
+          </div>
+
+          <!-- Bento 3 -->
+          <div class="bento-card">
+            <div class="bento-header">
+              <span class="small-label">Supply Chain</span>
+              <span class="bento-num">03</span>
+            </div>
+            <h3>Warehousing</h3>
+            <p>Micro-hub space for SAAMAAN wholesale stock and last-mile village parcel drop-offs.</p>
+          </div>
+
+          <!-- Bento 4 -->
+          <div class="bento-card">
+            <div class="bento-header">
+              <span class="small-label">Media &amp; Ads</span>
+              <span class="bento-num">04</span>
+            </div>
+            <h3>Brand Activation</h3>
+            <p>High-visibility highway hoardings, product sampling displays, and experiential rural demo bays.</p>
+          </div>
+
+          <!-- Bento 5 -->
+          <div class="bento-card">
+            <div class="bento-header">
+              <span class="small-label">Logistics Bay</span>
+              <span class="bento-num">05</span>
+            </div>
+            <h3>Trucker Services</h3>
+            <p>Tyre repair, rest bays, fresh food meals, and return-load logistics freight booking.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         A5. HOW THE FRANCHISE WORKS (Two Columns: Black Card vs White Card)
+         ==================================================================== -->
+    <section id="model" class="section-wrap" style="background-color: var(--white);">
+      <div class="container fade-up">
+        <span class="section-pill">03 / Franchise Partnership</span>
+        <h2>How the franchise works<span class="deg-sym">&deg;</span></h2>
+        <p style="margin-bottom: var(--space-4);">A clear, transparent division of responsibilities with guaranteed operational backing.</p>
+
+        <div class="grid-2">
+          <!-- Left Black Card: Hesa provides -->
+          <div class="card" style="background-color: var(--black); color: var(--white); border: 2px solid var(--black); padding: 36px 28px;">
+            <h3 style="color: var(--white); font-size: 1.5rem; margin-bottom: 20px;">Hesa provides:</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 14px; font-size: 1.05rem;">
+              <li style="display: flex; gap: 12px; align-items: center;">
+                <span style="color: var(--yellow); font-weight: 800; font-size: 1.25rem;">&#x2713;</span>
+                <span>Prefab modular unit (300-500 sq ft)</span>
+              </li>
+              <li style="display: flex; gap: 12px; align-items: center;">
+                <span style="color: var(--yellow); font-weight: 800; font-size: 1.25rem;">&#x2713;</span>
+                <span>Full highway brand kit and roadside signage</span>
+              </li>
+              <li style="display: flex; gap: 12px; align-items: center;">
+                <span style="color: var(--yellow); font-weight: 800; font-size: 1.25rem;">&#x2713;</span>
+                <span>Integrated cloud POS tech platform</span>
+              </li>
+              <li style="display: flex; gap: 12px; align-items: center;">
+                <span style="color: var(--yellow); font-weight: 800; font-size: 1.25rem;">&#x2713;</span>
+                <span>SAAMAAN wholesale supply chain access</span>
+              </li>
+              <li style="display: flex; gap: 12px; align-items: center;">
+                <span style="color: var(--yellow); font-weight: 800; font-size: 1.25rem;">&#x2713;</span>
+                <span>In-depth onboarding and operations training</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Right White Card: You provide -->
+          <div class="card" style="border: 2px solid var(--black); padding: 36px 28px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3 style="font-size: 1.5rem; margin-bottom: 20px;">You (the Hesaathi) provide:</h3>
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: 14px; font-size: 1.05rem; margin-bottom: 24px;">
+                <li style="display: flex; gap: 12px; align-items: center;">
+                  <span style="color: var(--black); font-weight: 800; font-size: 1.25rem;">&#x2713;</span>
+                  <span>Your land (own, leased or panchayat allotment)</span>
+                </li>
+                <li style="display: flex; gap: 12px; align-items: center;">
+                  <span style="color: var(--black); font-weight: 800; font-size: 1.25rem;">&#x2713;</span>
+                  <span>Day-to-day operations and customer service</span>
+                </li>
+                <li style="display: flex; gap: 12px; align-items: center;">
+                  <span style="color: var(--black); font-weight: 800; font-size: 1.25rem;">&#x2713;</span>
+                  <span>2-3 locally hired support staff</span>
+                </li>
+              </ul>
+            </div>
+
+            <div style="border-top: 2px solid var(--black); padding-top: 18px;">
+              <p style="font-weight: 700; margin-bottom: 0;">
+                <strong>Revenue Model:</strong> Hesa earns a 20% royalty on gross revenue; you retain 80% of net operational profits.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         A6. KEY NUMBERS (Yellow Band with 4 Huge Numbers)
+         ==================================================================== -->
+    <section class="section-wrap section-yellow" style="border-top: 1px solid var(--black);">
+      <div class="container fade-up">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: var(--space-4);">
+          <div>
+            <span class="section-pill" style="background-color: var(--white);">04 / Economics</span>
+            <h2 style="color: var(--black);">Key numbers<span class="deg-sym" style="color: var(--black);">&deg;</span></h2>
+          </div>
+          <span class="small-label" style="background-color: var(--black); color: var(--white); padding: 4px 12px; border-radius: var(--radius-pill);">
+            Projected figures
+          </span>
+        </div>
+
+        <div class="num-band-grid">
+          <div>
+            <div class="num-big-val">&#8377;12-18L</div>
+            <p style="font-weight: 700; color: var(--black);">Set-up cost per Adda</p>
+          </div>
+          <div>
+            <div class="num-big-val">18 mos</div>
+            <p style="font-weight: 700; color: var(--black);">Target payback period</p>
+          </div>
+          <div>
+            <div class="num-big-val">&#8377;2.8L</div>
+            <p style="font-weight: 700; color: var(--black);">Estimated monthly revenue</p>
+          </div>
+          <div>
+            <div class="num-big-val">800 - 2.5K</div>
+            <p style="font-weight: 700; color: var(--black);">Daily footfall range</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         A7. WHY BECOME A HESAATHI?
+         ==================================================================== -->
+    <section class="section-wrap">
+      <div class="container fade-up">
+        <span class="section-pill">05 / Entrepreneurship</span>
+        <h2>Why become a Hesaathi?<span class="deg-sym">&deg;</span></h2>
+        <div class="grid-3" style="margin-top: var(--space-4);">
+          <div class="card">
+            <h4>Run in Your Own Village</h4>
+            <p>Run your own thriving commercial business in your own village without needing to migrate to distant cities.</p>
+          </div>
+          <div class="card">
+            <h4>Corporate Tech &amp; Supply</h4>
+            <p>Gain the backing of Hesa's brand, technology stack, and SAAMAAN's deep supply chain network.</p>
+          </div>
+          <div class="card">
+            <h4>Low-Risk Proven Model</h4>
+            <p>Prefab modular installation and verified highway intersection traffic offer a reliable commercial launchpad.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         B1. PROCESS TIMELINE (5 Steps Joined by 2px Black Line)
+         ==================================================================== -->
+    <section id="process" class="section-wrap" style="background-color: var(--white);">
+      <div class="container fade-up">
+        <span class="section-pill">Step-by-Step Flow</span>
+        <h2>Your journey from application to a live Adda<span class="deg-sym">&deg;</span></h2>
+        <p>A fast, structured onboarding pipeline with guaranteed 48-hour physical site evaluation.</p>
+
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="timeline-step-num">01</div>
+            <div class="timeline-step-content">
+              <h4>Register</h4>
+              <p>Sign up with your mobile number and OTP in under 60 seconds.</p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-step-num">02</div>
+            <div class="timeline-step-content">
+              <h4>Apply</h4>
+              <p>Fill a simple 4-step form with your land details and document photos.</p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-step-num">03</div>
+            <div class="timeline-step-content">
+              <h4>Verification (48h)</h4>
+              <p>Hesa team reviews your site on map and a Manager visits your land.</p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-step-num">04</div>
+            <div class="timeline-step-content">
+              <h4>Decision</h4>
+              <p>Approved, changes requested, or rejected with a transparent reason.</p>
+            </div>
+          </div>
+
+          <div class="timeline-step">
+            <div class="timeline-step-num">05</div>
+            <div class="timeline-step-content">
+              <h4>Set up and go live</h4>
+              <p>Receive your Adda ID, agreement, and prefab unit setup, then launch.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         B2 & B3. REQUIREMENTS & VERIFICATION CRITERIA (Black Section)
+         ==================================================================== -->
+    <section class="section-wrap section-black">
+      <div class="container fade-up">
+        <div class="grid-2" style="gap: var(--space-6);">
+
+          <!-- B2: What you need -->
+          <div>
+            <span class="section-pill">Checklist</span>
+            <h3 style="color: var(--white); font-size: 1.75rem; margin-bottom: var(--space-3);">What you need to apply<span class="deg-sym">&deg;</span></h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 14px; font-size: 1.05rem;">
+              <li style="display: flex; gap: 12px; align-items: center;">
+                <span style="color: var(--yellow); font-weight: 800;">&#x2713;</span>
+                <span>Active 10-digit mobile number</span>
+              </li>
+              <li style="display: flex; gap: 12px; align-items: center;">
+                <span style="color: var(--yellow); font-weight: 800;">&#x2713;</span>
+                <span>ID proof (Aadhaar or PAN)</span>
+              </li>
+              <li style="display: flex; gap: 12px; align-items: center;">
+                <span style="color: var(--yellow); font-weight: 800;">&#x2713;</span>
+                <span>Land ownership paper, or lease / panchayat letter</span>
+              </li>
+              <li style="display: flex; gap: 12px; align-items: center;">
+                <span style="color: var(--yellow); font-weight: 800;">&#x2713;</span>
+                <span>Photos of your land (front, road view, surroundings)</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- B3: What we check -->
+          <div>
+            <span class="section-pill">48h Audit</span>
+            <h3 style="color: var(--white); font-size: 1.75rem; margin-bottom: var(--space-3);">What we check<span class="deg-sym">&deg;</span></h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div class="card" style="padding: 16px;">
+                <h4 style="margin-bottom: 4px;">1. Location</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 0;">Distance from highway edge, villages within 20 km, and nearby competition.</p>
+              </div>
+              <div class="card" style="padding: 16px;">
+                <h4 style="margin-bottom: 4px;">2. Land</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 0;">Usable dimensions (min 3000 sq ft), clear ownership paper, and road access.</p>
+              </div>
+              <div class="card" style="padding: 16px;">
+                <h4 style="margin-bottom: 4px;">3. Ground visit</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 0;">NHAI setback clearance, commercial power line, water, and truck parking.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         B4. WHAT IS COMING NEXT (Roadmap)
+         ==================================================================== -->
+    <section class="section-wrap">
+      <div class="container fade-up">
+        <span class="section-pill">Product Roadmap</span>
+        <h2>What is coming next<span class="deg-sym">&deg;</span></h2>
+        <div class="grid-3" style="margin-top: var(--space-4);">
+          <div class="card" style="border-top: 6px solid var(--yellow);">
+            <span class="badge badge-submitted" style="margin-bottom: 12px;">NOW</span>
+            <h4>Onboarding &amp; Verification</h4>
+            <p>Online application and 48-hour site verification by ground operations managers.</p>
+          </div>
+          <div class="card">
+            <span class="badge" style="border: 2px solid var(--black); margin-bottom: 12px;">NEXT</span>
+            <h4>Adda POS &amp; Inventory App</h4>
+            <p>Adda app for billing, SAAMAAN stock reorders, and daily cash shifts after approval.</p>
+          </div>
+          <div class="card">
+            <span class="badge" style="border: 2px solid var(--black); margin-bottom: 12px;">LATER</span>
+            <h4>Full Scale Ecosystem</h4>
+            <p>Integrated Hesa banking services, national brand campaigns, and predictive highway analytics.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         B5. FAQ ACCORDION (1px Black Dividers, '+' rotates to 'x')
+         ==================================================================== -->
+    <section id="faq" class="section-wrap">
+      <div class="container fade-up">
+        <span class="section-pill">Got Questions?</span>
+        <h2>Frequently asked questions<span class="deg-sym">&deg;</span></h2>
+
+        <div style="max-width: 800px; margin-top: var(--space-4);">
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleFaq(this)">
+              <span>Who can apply?</span>
+              <span class="accordion-icon">+</span>
+            </div>
+            <div class="accordion-body">
+              <p>Any Indian citizen residing near a national highway intersection who has suitable land can apply to become a Hesaathi entrepreneur.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleFaq(this)">
+              <span>Do I need my own land?</span>
+              <span class="accordion-icon">+</span>
+            </div>
+            <div class="accordion-body">
+              <p>No, you do not need to own the land outright. You can apply with self-owned land, leased land (with at least a 3-year registered agreement), or land allocated via a Gram Panchayat NOC.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleFaq(this)">
+              <span>How much does it cost?</span>
+              <span class="accordion-icon">+</span>
+            </div>
+            <div class="accordion-body">
+              <p>The set-up cost is about &#8377;12-18 lakh (projected), covering the prefab modular structure, civil foundation, electricals, tech hardware, and initial SAAMAAN retail inventory.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleFaq(this)">
+              <span>How long does approval take?</span>
+              <span class="accordion-icon">+</span>
+            </div>
+            <div class="accordion-body">
+              <p>We guarantee a verification decision within 48 hours of your complete application submission. A local Hesa Manager visits your site in person during this period.</p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleFaq(this)">
+              <span>What happens if I am rejected?</span>
+              <span class="accordion-icon">+</span>
+            </div>
+            <div class="accordion-body">
+              <p>If your land does not meet highway setback or visibility criteria, we share the exact reason transparently. You can immediately apply again with another parcel of land.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         B6. FINAL CALL TO ACTION (Full-width Black Band, Centred, Yellow Button)
+         ==================================================================== -->
+    <section class="section-wrap section-black" style="text-align: center; padding: 100px 0;">
+      <div class="container fade-up">
+        <h2 style="color: var(--white); font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: var(--space-3);">
+          Ready to start your Adda?<span class="deg-sym">&deg;</span>
+        </h2>
+        <p style="color: #DDD; font-size: 1.25rem; max-width: 600px; margin: 0 auto var(--space-4);">
+          Connect national highways to rural India. Apply today and receive your verified site decision within 48 hours.
+        </p>
+        <a href="#" class="btn btn-primary" onclick="routeApplyNow(event)" style="font-size: 1.125rem; padding: 16px 36px;">
+          Apply now &rarr;
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ====================================================================
+       FOOTER (Black, 4 Columns)
+       ==================================================================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-cols">
+        <!-- Col 1 -->
+        <div>
+          <div class="brand-wordmark" style="color: var(--white); margin-bottom: 8px;">HESA</div>
+          <p style="color: #AAA; font-size: 1rem; margin-bottom: 12px;">Rooted in Growth<span class="deg-sym">&deg;</span></p>
+          <p style="font-size: 0.875rem; color: #888;">
+            Highway commerce hubs connecting national corridors to rural micro-economies.
+          </p>
+        </div>
+
+        <!-- Col 2 -->
+        <div>
+          <h4>Quick Links</h4>
+          <p><a href="#about">About Model</a></p>
+          <p><a href="#revenue">Revenue Streams</a></p>
+          <p><a href="#process">Verification Process</a></p>
+          <p><a href="#faq">FAQ</a></p>
+        </div>
+
+        <!-- Col 3 -->
+        <div>
+          <h4>For Hesaathis</h4>
+          <p><a href="#" onclick="routeApplyNow(event)">Apply for Adda</a></p>
+          <p><a href="#" onclick="routeCheckStatus(event)">Track Application</a></p>
+          <p><a href="register.html">Sign In / Register</a></p>
+        </div>
+
+        <!-- Col 4 -->
+        <div>
+          <h4>Operations</h4>
+          <p><a href="admin/dashboard.html">Admin Portal</a></p>
+          <p><a href="manager/visits.html">Manager Ground Visits</a></p>
+          <p style="font-size: 0.8125rem; color: #888; margin-top: 8px;">Toll-free: 1800-HESA-ADDA</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 Hesa Technologies. Plain HTML / CSS / Vanilla JS Prototype.</div>
+        <div>
+          <button type="button" class="footer-reset-btn" onclick="handleResetDemo()">Reset demo data</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    renderRoleBar('hesaathi', '');
+
+    // Smart Routing for Apply Now and Check Status
+    function routeApplyNow(e) {
+      if (e) e.preventDefault();
+      const session = HesaStorage.getSession();
+      if (!session) {
+        window.location.href = 'register.html';
+        return;
+      }
+      const existingApp = HesaStorage.getApplicationByPhone(session);
+      if (existingApp && (existingApp.status === 'Submitted' || existingApp.status === 'Under review' || existingApp.status === 'Approved' || existingApp.status === 'Rejected' || existingApp.status === 'Changes requested')) {
+        HesaStorage.setActiveApplicationId(existingApp.id);
+        window.location.href = 'status.html';
+      } else {
+        window.location.href = 'apply.html';
+      }
+    }
+
+    function routeCheckStatus(e) {
+      if (e) e.preventDefault();
+      const session = HesaStorage.getSession();
+      if (!session) {
+        window.location.href = 'register.html';
+        return;
+      }
+      const existingApp = HesaStorage.getApplicationByPhone(session);
+      if (existingApp) {
+        HesaStorage.setActiveApplicationId(existingApp.id);
+        window.location.href = 'status.html';
+      } else {
+        window.location.href = 'status.html';
+      }
+    }
+
+    // FAQ Accordion Toggle (+ rotates to x)
+    function toggleFaq(headerEl) {
+      const item = headerEl.parentElement;
+      const isOpen = item.classList.contains('active');
+      document.querySelectorAll('.accordion-item').forEach(el => el.classList.remove('active'));
+      if (!isOpen) {
+        item.classList.add('active');
+      }
+    }
+
+    // Mobile Nav Drawer Toggle
+    function toggleMobileNav() {
+      const drawer = document.getElementById('mobile-drawer');
+      drawer.classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

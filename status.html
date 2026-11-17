@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application Status Tracker &mdash; Hesa Adda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .status-wrap {
+      padding: var(--space-6) var(--space-3) var(--space-10);
+      flex: 1;
+    }
+    .status-container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .demo-bar {
+      background-color: var(--white);
+      border: 2px solid var(--black);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: var(--space-4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 4px 4px 0 var(--black);
+    }
+    .tracker-steps {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 36px 0;
+    }
+    .tracker-steps::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 30px;
+      right: 30px;
+      height: 2px;
+      background-color: var(--black);
+      z-index: 1;
+    }
+    .tracker-step-item {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 25%;
+    }
+    .tracker-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--black);
+      background-color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-family: var(--font-display);
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+    .tracker-step-item.completed .tracker-circle {
+      background-color: var(--black);
+      color: var(--white);
+    }
+    .tracker-step-item.active .tracker-circle {
+      background-color: var(--yellow);
+      color: var(--black);
+    }
+    .tracker-label {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      line-height: 1.2;
+      font-family: var(--font-display);
+    }
+    .state-banner {
+      border: 2px solid var(--black);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+      box-shadow: 6px 6px 0 var(--black);
+    }
+    @media (max-width: 600px) {
+      .tracker-steps {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+      }
+      .tracker-steps::before {
+        display: none;
+      }
+      .tracker-step-item {
+        flex-direction: row;
+        width: 100%;
+        text-align: left;
+        gap: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Role Bar -->
+  <div id="role-bar-container"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo-area">
+        <span class="brand-wordmark">HESA</span>
+        <span class="brand-badge">ADDA</span>
+      </a>
+      <div class="header-actions">
+        <a href="apply.html" class="btn btn-secondary btn-sm">+ New Application</a>
+        <a href="index.html" class="btn btn-secondary btn-sm">Home</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="status-wrap">
+    <div class="status-container">
+
+      <!-- Interactive Demo Control Toolbar -->
+      <div class="demo-bar">
+        <div style="font-weight: 800; font-size: 0.8125rem; text-transform: uppercase; font-family: var(--font-display);">
+          Demo Switcher:
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <label style="font-size: 0.85rem; font-weight: 700;" for="demo-app-select">Application:</label>
+          <select id="demo-app-select" class="form-control" style="width: auto; min-height: 38px; padding: 4px 10px; font-size: 0.85rem;" onchange="switchDemoApp(this.value)">
+            <!-- Populated via JS -->
+          </select>
+
+          <label style="font-size: 0.85rem; font-weight: 700;" for="demo-status-select">Change Status:</label>
+          <select id="demo-status-select" class="form-control" style="width: auto; min-height: 38px; padding: 4px 10px; font-size: 0.85rem;" onchange="changeStatusFromDemo(this.value)">
+            <option value="Submitted">Submitted</option>
+            <option value="Under review">Under review</option>
+            <option value="Changes requested">Changes requested</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Main Status Card -->
+      <div class="card" style="margin-bottom: var(--space-4); box-shadow: 6px 6px 0 var(--black);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: var(--space-3);">
+          <div>
+            <span class="section-pill" style="margin-bottom: 6px;">Live SLA Tracker</span>
+            <div style="font-size: 0.875rem; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">
+              Reference: <strong id="disp-app-id">HA-2026-001</strong>
+            </div>
+            <h2>Site Verification Tracker<span class="deg-sym">&deg;</span></h2>
+            <p style="margin-top: 4px; font-size: 1rem;">
+              Highway Site: <strong id="disp-highway">NH 44 Cross</strong> &bull; <span id="disp-village">Kamareddy, Telangana</span>
+            </p>
+          </div>
+
+          <div style="text-align: right;">
+            <div id="disp-badge" style="margin-bottom: 8px;"></div>
+            <div>
+              <span id="disp-timer"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4-Step Tracker -->
+        <div class="tracker-steps" id="tracker-steps-container">
+          <div class="tracker-step-item completed" id="track-step-1">
+            <div class="tracker-circle">&#x2713;</div>
+            <div class="tracker-label">1. Submitted</div>
+          </div>
+          <div class="tracker-step-item active" id="track-step-2">
+            <div class="tracker-circle">2</div>
+            <div class="tracker-label">2. Under review</div>
+          </div>
+          <div class="tracker-step-item" id="track-step-3">
+            <div class="tracker-circle">3</div>
+            <div class="tracker-label">3. Visit scheduled</div>
+          </div>
+          <div class="tracker-step-item" id="track-step-4">
+            <div class="tracker-circle">4</div>
+            <div class="tracker-label">4. Decision</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DYNAMIC STATE VIEWS -->
+
+      <!-- State 1: Under Review / Submitted -->
+      <div id="state-review-box" class="state-banner" style="background-color: var(--white); display: none;">
+        <span class="section-pill">In Progress</span>
+        <h3 style="margin-bottom: 8px; font-size: 1.5rem;">Application received. Decision within 48 hours.<span class="deg-sym">&deg;</span></h3>
+        <p style="font-size: 1rem; line-height: 1.6; margin-bottom: 16px;">
+          Your land data and photos have been received by Hesa's highway planning desk. An operations manager has been assigned to conduct an on-ground physical inspection to verify setback clearances, commercial electricity feasibility, and heavy vehicle turning access.
+        </p>
+
+        <div class="grid-2" style="margin-top: 16px; border-top: 1px solid var(--black); padding-top: 16px;">
+          <div>
+            <div class="small-label" style="margin-bottom: 2px;">Assigned Field Manager:</div>
+            <div style="font-size: 1.15rem; font-weight: 800; font-family: var(--font-display);" id="disp-mgr-name">Vikram Patil</div>
+            <div style="font-size: 0.875rem;">Phone: +91 98480 22334</div>
+          </div>
+          <div>
+            <div class="small-label" style="margin-bottom: 2px;">Inspection Window:</div>
+            <div style="font-size: 1.15rem; font-weight: 800; font-family: var(--font-display);">Within 48-Hour SLA</div>
+            <div style="font-size: 0.875rem;">Live countdown ticking above</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- State 2: Changes Requested -->
+      <div id="state-changes-box" class="state-banner" style="background-color: var(--white); border: 2px solid var(--yellow); display: none;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+          <span class="badge badge-changes">Changes requested</span>
+          <h3 style="font-size: 1.4rem;">Action Needed: Document Update Required<span class="deg-sym">&deg;</span></h3>
+        </div>
+        <p style="margin-bottom: 14px;">
+          The operations officer has reviewed your proposal and requested the following update:
+        </p>
+        <div style="background-color: var(--white); border: 2px solid var(--black); border-radius: var(--radius-md); padding: 14px; font-weight: 700; margin-bottom: 20px;" id="disp-changes-reason">
+          Road view photo unclear. Need clearer survey map showing NH boundary pillar.
+        </div>
+
+        <div style="border-top: 1px solid var(--black); padding-top: 16px;">
+          <h4 style="margin-bottom: 10px;">Re-upload Requested Document / Photo:</h4>
+          <div class="upload-dropzone" onclick="document.getElementById('reupload-file').click()" style="margin-bottom: 12px;">
+            <p style="font-weight: 700;">Click to upload revised document / photo</p>
+            <input type="file" id="reupload-file" style="display: none;" onchange="handleReupload(this)">
+          </div>
+          <div id="reupload-preview" class="upload-preview" style="display: none; margin-bottom: 14px;">
+            <span id="reupload-filename" style="font-weight: 700;">revised_site_photo.jpg</span>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="submitReupload()">
+            Resubmit for Review &rarr;
+          </button>
+        </div>
+      </div>
+
+      <!-- State 3: Approved -->
+      <div id="state-approved-box" class="state-banner" style="background-color: var(--black); color: var(--white); border: 2px solid var(--yellow); display: none;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <span class="badge" style="background-color: var(--yellow); color: var(--black); font-size: 0.9rem;">APPROVED</span>
+          <h2 style="color: var(--white);">Congratulations! Your Adda is Approved<span class="deg-sym">&deg;</span></h2>
+        </div>
+        <p style="color: var(--white); font-size: 1.1rem; line-height: 1.6; margin-bottom: 20px;">
+          Your highway land has successfully cleared ground inspection and geometric feasibility checks.
+        </p>
+
+        <div style="background-color: var(--white); color: var(--black); border: 2px solid var(--black); border-radius: var(--radius-md); padding: 24px; margin-bottom: 24px;">
+          <div class="small-label" style="margin-bottom: 4px;">Your Official Adda Franchise ID:</div>
+          <div style="font-family: var(--font-display); font-size: 2.5rem; font-weight: 800; line-height: 1; margin: 4px 0 8px;" id="disp-adda-id">ADDA-TS-001</div>
+          <p style="font-weight: 700; margin-bottom: 0;">
+            Your Adda ID and password will be sent by WhatsApp/SMS.
+          </p>
+        </div>
+
+        <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+          <a href="admin/addas.html" class="btn btn-primary">View Setup Schedule &rarr;</a>
+          <button type="button" class="btn btn-secondary" onclick="alert('Franchise agreement PDF generated. Check your registered email.')">Download Franchise Agreement</button>
+        </div>
+      </div>
+
+      <!-- State 4: Rejected -->
+      <div id="state-rejected-box" class="state-banner" style="background-color: var(--white); border: 2px solid var(--black); display: none;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+          <span class="badge badge-rejected">&#x2715; Rejected</span>
+          <h3 style="font-size: 1.4rem;">Application Not Approved for this Location<span class="deg-sym">&deg;</span></h3>
+        </div>
+        <p style="margin-bottom: 12px;">
+          We regret to inform you that this specific parcel of land does not meet our minimum commercial safety criteria:
+        </p>
+
+        <div style="border: 2px solid var(--black); border-radius: var(--radius-md); padding: 16px; background-color: var(--white); font-weight: 700; margin-bottom: 20px;" id="disp-rejection-reason">
+          Land is 800m away from highway intersection; falls outside designated commerce frontage radius. Also inside flood plain margin.
+        </div>
+
+        <p style="font-size: 0.95rem; margin-bottom: 18px;">
+          You can immediately apply again with another parcel of land or highway junction.
+        </p>
+        <a href="apply.html" class="btn btn-primary">Apply with other land &rarr;</a>
+      </div>
+
+      <!-- Application Details Card -->
+      <div class="card" style="margin-top: var(--space-4);">
+        <h3 style="margin-bottom: 16px; border-bottom: 2px solid var(--black); padding-bottom: 8px;">Submitted Site Information<span class="deg-sym">&deg;</span></h3>
+
+        <div class="grid-2">
+          <div>
+            <p><strong>Applicant Name:</strong> <span id="info-name">Ramesh Reddy</span></p>
+            <p><strong>Mobile Number:</strong> <span id="info-phone">9848012345</span></p>
+            <p><strong>ID Type &amp; Number:</strong> <span id="info-id">Aadhaar (XXXX-XXXX-4589)</span></p>
+            <p><strong>Submitted Date:</strong> <span id="info-date">2026-11-17 10:30 AM</span></p>
+          </div>
+          <div>
+            <p><strong>Land Size:</strong> <span id="info-size">4800 sq ft</span></p>
+            <p><strong>Ownership:</strong> <span id="info-owner">Self Owned</span></p>
+            <p><strong>Distance to Highway:</strong> <span id="info-dist">0.08 km (80 meters)</span></p>
+            <p><strong>Automated Site Score:</strong> <span id="info-score" style="font-weight: 800;">88 / 100</span></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>HESA &mdash; Rooted in Growth<span class="deg-sym">&deg;</span></div>
+        <div>
+          <button type="button" class="footer-reset-btn" onclick="handleResetDemo()">Reset demo data</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Session Guard: Must have active session
+    const currentSessionPhone = HesaStorage.requireSession('register.html');
+    renderRoleBar('hesaathi', '');
+
+    let currentApp = null;
+
+    function populateAppSelector() {
+      const apps = HesaStorage.getApplications();
+      const sel = document.getElementById('demo-app-select');
+      sel.innerHTML = '';
+      const activeId = HesaStorage.getActiveApplicationId();
+
+      apps.forEach(app => {
+        const opt = document.createElement('option');
+        opt.value = app.id;
+        opt.textContent = `${app.id} - ${app.applicantName} (${app.status})`;
+        if (app.id === activeId) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+
+    function switchDemoApp(appId) {
+      HesaStorage.setActiveApplicationId(appId);
+      loadApplicationData();
+    }
+
+    function changeStatusFromDemo(newStatus) {
+      updateActiveAppStatus(newStatus);
+      loadApplicationData();
+      populateAppSelector();
+    }
+
+    function loadApplicationData() {
+      // Find app for this session or active demo id
+      let app = null;
+      const activeId = HesaStorage.getActiveApplicationId();
+      if (activeId) {
+        app = HesaStorage.getApplicationById(activeId);
+      }
+      if (!app && currentSessionPhone) {
+        app = HesaStorage.getApplicationByPhone(currentSessionPhone);
+      }
+      if (!app) {
+        const apps = HesaStorage.getApplications();
+        if (apps.length > 0) app = apps[0];
+      }
+
+      currentApp = app;
+      if (!currentApp) return;
+
+      HesaStorage.setActiveApplicationId(currentApp.id);
+
+      document.getElementById('disp-app-id').textContent = currentApp.id;
+      document.getElementById('disp-highway').textContent = currentApp.highway || 'NH 44 Cross';
+      document.getElementById('disp-village').textContent = `${currentApp.village || ''}, ${currentApp.state || ''}`;
+
+      document.getElementById('disp-badge').innerHTML = renderStatusBadge(currentApp.status);
+      document.getElementById('disp-timer').innerHTML = renderTimerBadge(currentApp.submittedAt, currentApp.status);
+
+      document.getElementById('info-name').textContent = currentApp.applicantName;
+      document.getElementById('info-phone').textContent = currentApp.phone;
+      document.getElementById('info-id').textContent = `${currentApp.idType || 'Aadhaar'} (${currentApp.idNumber || 'Verified'})`;
+      document.getElementById('info-date').textContent = new Date(currentApp.submittedAt || Date.now()).toLocaleString();
+      document.getElementById('info-size').textContent = `${(currentApp.landSizeSqFt || 4000).toLocaleString()} sq ft`;
+      document.getElementById('info-owner').textContent = currentApp.ownershipType === 'own' ? 'Self Owned' : currentApp.ownershipType === 'lease' ? 'Leased' : 'Gram Panchayat';
+      document.getElementById('info-dist').textContent = `${currentApp.distanceFromHighwayKm || 0.08} km`;
+      document.getElementById('info-score').textContent = `${currentApp.siteScore || 78} / 100`;
+
+      updateTrackerUI(currentApp.status);
+
+      const reviewBox = document.getElementById('state-review-box');
+      const changesBox = document.getElementById('state-changes-box');
+      const approvedBox = document.getElementById('state-approved-box');
+      const rejectedBox = document.getElementById('state-rejected-box');
+
+      reviewBox.style.display = 'none';
+      changesBox.style.display = 'none';
+      approvedBox.style.display = 'none';
+      rejectedBox.style.display = 'none';
+
+      if (currentApp.status === 'Approved') {
+        approvedBox.style.display = 'block';
+        document.getElementById('disp-adda-id').textContent = currentApp.addaId || 'ADDA-TS-001';
+      } else if (currentApp.status === 'Rejected') {
+        rejectedBox.style.display = 'block';
+        document.getElementById('disp-rejection-reason').textContent = currentApp.rejectionReason || 'Site does not meet mandatory highway setback clearance rules.';
+      } else if (currentApp.status === 'Changes requested') {
+        changesBox.style.display = 'block';
+        document.getElementById('disp-changes-reason').textContent = currentApp.changesReason || 'Please provide clear front and road approach photographs.';
+      } else {
+        reviewBox.style.display = 'block';
+        document.getElementById('disp-mgr-name').textContent = currentApp.managerVisit?.managerName || 'Vikram Patil';
+      }
+
+      const statusSelect = document.getElementById('demo-status-select');
+      if (statusSelect) statusSelect.value = currentApp.status;
+    }
+
+    function updateTrackerUI(status) {
+      const s1 = document.getElementById('track-step-1');
+      const s2 = document.getElementById('track-step-2');
+      const s3 = document.getElementById('track-step-3');
+      const s4 = document.getElementById('track-step-4');
+
+      [s1, s2, s3, s4].forEach(s => s.className = 'tracker-step-item');
+
+      if (status === 'Submitted') {
+        s1.classList.add('active');
+      } else if (status === 'Under review') {
+        s1.classList.add('completed');
+        s2.classList.add('active');
+      } else if (status === 'Changes requested') {
+        s1.classList.add('completed');
+        s2.classList.add('active');
+      } else if (status === 'Approved' || status === 'Rejected') {
+        s1.classList.add('completed');
+        s2.classList.add('completed');
+        s3.classList.add('completed');
+        s4.classList.add('completed');
+      }
+    }
+
+    function handleReupload(input) {
+      if (input.files && input.files[0]) {
+        document.getElementById('reupload-preview').style.display = 'flex';
+        document.getElementById('reupload-filename').textContent = input.files[0].name;
+      }
+    }
+
+    function submitReupload() {
+      if (!currentApp) return;
+      currentApp.status = 'Under review';
+      currentApp.changesReason = '';
+      HesaStorage.saveApplication(currentApp);
+      alert('Updated documents submitted successfully. Status is now Under review.');
+      loadApplicationData();
+      populateAppSelector();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      populateAppSelector();
+      loadApplicationData();
+    });
+  </script>
+</body>
+</html>

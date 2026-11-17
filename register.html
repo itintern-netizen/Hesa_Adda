@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in / Register &mdash; Hesa Adda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .auth-page {
+      padding: 64px 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+      background-color: var(--white);
+    }
+    .auth-box {
+      width: 100%;
+      max-width: 480px;
+      border: 2px solid var(--black);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      background-color: var(--white);
+      box-shadow: 6px 6px 0 var(--black);
+    }
+    .otp-display-box {
+      background-color: var(--yellow);
+      border: 2px solid var(--black);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .otp-code-large {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      line-height: 1;
+      color: var(--black);
+    }
+    .active-session-card {
+      background-color: var(--white);
+      border: 2px solid var(--black);
+      border-left: 8px solid var(--yellow);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Role Bar -->
+  <div id="role-bar-container"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo-area">
+        <span class="brand-wordmark">HESA</span>
+        <span class="brand-badge">ADDA</span>
+      </a>
+      <div class="header-actions">
+        <a href="index.html" class="btn btn-secondary btn-sm">&larr; Back to Home</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="auth-page">
+    <div class="auth-box">
+
+      <!-- EXISTING ACTIVE SESSION ALERT (If already logged in) -->
+      <div id="active-session-block" class="active-session-card" style="display: none;">
+        <span class="section-pill" style="margin-bottom: 8px;">Active Session</span>
+        <h3 style="margin-bottom: 6px;">Welcome back, <span id="sess-user-name">Hesaathi</span></h3>
+        <p style="font-size: 0.95rem; margin-bottom: 16px;">
+          Signed in with mobile number <strong id="sess-user-phone">+91 9848012345</strong>.
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button type="button" id="btn-continue-session" class="btn btn-primary" onclick="continueActiveSession()">
+            Continue to Application &rarr;
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="useDifferentNumber()">
+            Use a different mobile number
+          </button>
+        </div>
+      </div>
+
+      <!-- MAIN AUTH WIZARD FORM -->
+      <div id="auth-wizard-block">
+
+        <!-- STEP 1: MOBILE NUMBER -->
+        <div id="auth-step-mobile">
+          <span class="section-pill">Step 1 of 2</span>
+          <h2 style="font-size: 1.85rem; margin-bottom: 8px;">Sign In or Register<span class="deg-sym">&deg;</span></h2>
+          <p style="font-size: 0.95rem; margin-bottom: 24px;">
+            Enter your 10-digit mobile number. We'll send an instant verification code.
+          </p>
+
+          <form id="mobile-form" onsubmit="handleSendOtp(event)">
+            <div class="form-group">
+              <label class="form-label" for="phone-input">Mobile Number <span class="req">*</span></label>
+              <div style="display: flex; gap: 8px;">
+                <input type="tel" id="phone-input" class="form-control" placeholder="10-digit mobile number" maxlength="10" autocomplete="tel" required>
+              </div>
+              <span id="err-phone" class="field-error" style="display: none;">Please enter exactly 10 digits.</span>
+            </div>
+
+            <button type="submit" id="btn-send-otp" class="btn btn-primary btn-block">
+              Send OTP &rarr;
+            </button>
+          </form>
+        </div>
+
+        <!-- STEP 2: VERIFY OTP -->
+        <div id="auth-step-otp" style="display: none;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="showStepMobile()" style="margin-bottom: 16px;">
+            &larr; Change Number
+          </button>
+
+          <span class="section-pill">Verification</span>
+          <h2 style="font-size: 1.85rem; margin-bottom: 8px;">Verify Mobile<span class="deg-sym">&deg;</span></h2>
+          <p style="font-size: 0.95rem; margin-bottom: 16px;">
+            Code sent to <strong id="disp-mobile-target">+91 9848012345</strong>
+          </p>
+
+          <!-- Clear On-screen Demo OTP Box (Auto-filled) -->
+          <div class="otp-display-box">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 12px; font-weight: 700; text-transform: uppercase;">Demo OTP (Auto-filled):</span>
+              <button type="button" onclick="generateNewOtp()" style="background: none; border: none; text-decoration: underline; font-weight: 700; cursor: pointer; font-size: 12px; font-family: inherit;">
+                Resend OTP
+              </button>
+            </div>
+            <div class="otp-code-large" id="demo-otp-code">482913</div>
+            <span style="font-size: 12px;">Accepts this code or ANY 6-digit number in demo mode.</span>
+          </div>
+
+          <form id="otp-form" onsubmit="handleVerifyOtp(event)">
+            <div class="form-group">
+              <label class="form-label" for="otp-input">Enter 6-Digit OTP <span class="req">*</span></label>
+              <input type="text" id="otp-input" class="form-control" placeholder="6-digit code" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required>
+              <span id="err-otp" class="field-error" style="display: none;">Please enter a 6-digit code.</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <button type="submit" id="btn-verify-otp" class="btn btn-primary btn-block">
+                Verify &amp; Continue &rarr;
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- STEP 3: NEW USER PROFILE (Shown only for new numbers without profile) -->
+        <div id="auth-step-profile" style="display: none;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="showStepOtp()" style="margin-bottom: 16px;">
+            &larr; Back
+          </button>
+
+          <span class="section-pill">New Hesaathi Profile</span>
+          <h2 style="font-size: 1.85rem; margin-bottom: 8px;">Create Your Profile<span class="deg-sym">&deg;</span></h2>
+          <p style="font-size: 0.95rem; margin-bottom: 20px;">
+            Set up your details once to begin your highway land application.
+          </p>
+
+          <form id="profile-form" onsubmit="handleSaveProfile(event)">
+            <div class="form-group">
+              <label class="form-label" for="fullname-input">Full Name (as per Aadhaar/PAN) <span class="req">*</span></label>
+              <input type="text" id="fullname-input" class="form-control" placeholder="e.g. Ramesh Reddy" required>
+              <span id="err-name" class="field-error" style="display: none;">Full name is required.</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="village-input">Village or Town <span class="req">*</span></label>
+              <input type="text" id="village-input" class="form-control" placeholder="e.g. Kamareddy" required>
+              <span id="err-village" class="field-error" style="display: none;">Village or town is required.</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Preferred Communication Language <span class="req">*</span></label>
+              <div style="display: flex; gap: 16px; margin-top: 8px;">
+                <label class="form-check">
+                  <input type="radio" name="user-lang" value="English" checked>
+                  <span>English</span>
+                </label>
+                <label class="form-check">
+                  <input type="radio" name="user-lang" value="Telugu">
+                  <span>Telugu</span>
+                </label>
+                <label class="form-check">
+                  <input type="radio" name="user-lang" value="Hindi">
+                  <span>Hindi</span>
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" id="btn-save-profile" class="btn btn-primary btn-block" style="margin-top: 24px;">
+              Start 4-Step Application &rarr;
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <div>HESA &mdash; Rooted in Growth<span class="deg-sym">&deg;</span></div>
+        <div>
+          <button type="button" class="footer-reset-btn" onclick="handleResetDemo()">Reset demo data</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    renderRoleBar('hesaathi', '');
+
+    let activePhone = '';
+    let currentGeneratedOtp = '';
+
+    // Check existing session
+    function checkCurrentSession() {
+      const sessionPhone = HesaStorage.getSession();
+      if (sessionPhone) {
+        const user = HesaStorage.getUserByPhone(sessionPhone);
+        const activeCard = document.getElementById('active-session-block');
+        const wizard = document.getElementById('auth-wizard-block');
+
+        activeCard.style.display = 'block';
+        document.getElementById('sess-user-phone').textContent = `+91 ${sessionPhone}`;
+        document.getElementById('sess-user-name').textContent = user?.fullname || 'Hesaathi';
+
+        // Check if user has submitted application
+        const existingApp = HesaStorage.getApplicationByPhone(sessionPhone);
+        if (existingApp && (existingApp.status === 'Submitted' || existingApp.status === 'Under review' || existingApp.status === 'Approved' || existingApp.status === 'Rejected' || existingApp.status === 'Changes requested')) {
+          document.getElementById('btn-continue-session').innerHTML = 'View Application Status &rarr;';
+        } else {
+          document.getElementById('btn-continue-session').innerHTML = 'Resume Application Draft &rarr;';
+        }
+      } else {
+        document.getElementById('active-session-block').style.display = 'none';
+      }
+    }
+
+    function continueActiveSession() {
+      const sessionPhone = HesaStorage.getSession();
+      if (!sessionPhone) return;
+
+      const existingApp = HesaStorage.getApplicationByPhone(sessionPhone);
+      if (existingApp) {
+        HesaStorage.setActiveApplicationId(existingApp.id);
+        window.location.href = 'status.html';
+      } else {
+        window.location.href = 'apply.html';
+      }
+    }
+
+    function useDifferentNumber() {
+      HesaStorage.clearSession();
+      document.getElementById('active-session-block').style.display = 'none';
+      document.getElementById('auth-wizard-block').style.display = 'block';
+      showStepMobile();
+    }
+
+    function showStepMobile() {
+      document.getElementById('auth-step-mobile').style.display = 'block';
+      document.getElementById('auth-step-otp').style.display = 'none';
+      document.getElementById('auth-step-profile').style.display = 'none';
+      document.getElementById('phone-input').focus();
+    }
+
+    function showStepOtp() {
+      document.getElementById('auth-step-mobile').style.display = 'none';
+      document.getElementById('auth-step-otp').style.display = 'block';
+      document.getElementById('auth-step-profile').style.display = 'none';
+      document.getElementById('otp-input').focus();
+    }
+
+    function showStepProfile() {
+      document.getElementById('auth-step-mobile').style.display = 'none';
+      document.getElementById('auth-step-otp').style.display = 'none';
+      document.getElementById('auth-step-profile').style.display = 'block';
+      document.getElementById('fullname-input').focus();
+    }
+
+    // Step 1: Send OTP
+    function handleSendOtp(e) {
+      e.preventDefault();
+      const phoneInput = document.getElementById('phone-input');
+      const errPhone = document.getElementById('err-phone');
+      const val = phoneInput.value.replace(/\D/g, '').trim();
+
+      if (val.length !== 10) {
+        errPhone.style.display = 'block';
+        return;
+      }
+      errPhone.style.display = 'none';
+      activePhone = val;
+
+      document.getElementById('disp-mobile-target').textContent = `+91 ${activePhone}`;
+      generateNewOtp();
+      showStepOtp();
+    }
+
+    // Generate random 6-digit OTP
+    function generateNewOtp() {
+      currentGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      document.getElementById('demo-otp-code').textContent = currentGeneratedOtp;
+      const otpInput = document.getElementById('otp-input');
+      otpInput.value = currentGeneratedOtp;
+      document.getElementById('err-otp').style.display = 'none';
+    }
+
+    // Step 2: Verify OTP
+    function handleVerifyOtp(e) {
+      e.preventDefault();
+      const otpInput = document.getElementById('otp-input');
+      const errOtp = document.getElementById('err-otp');
+      const entered = otpInput.value.replace(/\D/g, '').trim();
+
+      // Accepts generated OTP OR ANY 6-digit number
+      if (entered.length !== 6) {
+        errOtp.style.display = 'block';
+        return;
+      }
+      errOtp.style.display = 'none';
+
+      // Set active session
+      HesaStorage.setSession(activePhone);
+
+      // Check if user already exists
+      const existingUser = HesaStorage.getUserByPhone(activePhone);
+      const existingApp = HesaStorage.getApplicationByPhone(activePhone);
+
+      if (existingUser || existingApp) {
+        // Known user: Log in directly!
+        if (existingApp) {
+          HesaStorage.setActiveApplicationId(existingApp.id);
+          window.location.href = 'status.html';
+        } else {
+          window.location.href = 'apply.html';
+        }
+      } else {
+        // Brand new user: prompt profile details
+        showStepProfile();
+      }
+    }
+
+    // Step 3: Save Profile for new user
+    function handleSaveProfile(e) {
+      e.preventDefault();
+      const fullname = document.getElementById('fullname-input').value.trim();
+      const village = document.getElementById('village-input').value.trim();
+      const language = document.querySelector('input[name="user-lang"]:checked')?.value || 'English';
+
+      let valid = true;
+      if (!fullname) { document.getElementById('err-name').style.display = 'block'; valid = false; } else { document.getElementById('err-name').style.display = 'none'; }
+      if (!village) { document.getElementById('err-village').style.display = 'block'; valid = false; } else { document.getElementById('err-village').style.display = 'none'; }
+      if (!valid) return;
+
+      const newUser = {
+        phone: activePhone,
+        fullname: fullname,
+        village: village,
+        language: language,
+        registeredAt: new Date().toISOString()
+      };
+
+      HesaStorage.saveUser(newUser);
+
+      // Pre-seed draft
+      const draft = {
+        applicantName: fullname,
+        phone: activePhone,
+        village: village,
+        state: 'Telangana',
+        language: language
+      };
+      localStorage.setItem('hesa_application_draft', JSON.stringify(draft));
+
+      // Redirect to application wizard
+      window.location.href = 'apply.html';
+    }
+
+    // Enter key submits inside OTP input
+    document.getElementById('otp-input')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        handleVerifyOtp(e);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      checkCurrentSession();
+    });
+  </script>
+</body>
+</html>
